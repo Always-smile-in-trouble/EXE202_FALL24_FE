@@ -1,0 +1,11 @@
+.swiper-slide  .testimony {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+#testimonials {
+    height: 18rem !important;
+}
+.swiper-pagination-bullet {
+    background: #FFC107;
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "John Doe",
+    "image": "https://i.ibb.co/h8zN7hc/pngtree-businessman-avatar-icon-flat-style-png-image-1917273.jpg",
+    "testimony": "The system does a great job of connecting players with similar skill levels, which helps in creating balanced and enjoyable matches."
+  },
+  {
+    "name": "Jane Smith",
+    "image": "https://i.ibb.co/9s52wRL/avatar6.png",
+    "testimony": "The interface is intuitive and easy to navigate, making it straightforward for players to find and join games quickly."
+  },
+  {
+    "name": "Michael Johnson",
+    "image": "https://i.ibb.co/h8zN7hc/pngtree-businessman-avatar-icon-flat-style-png-image-1917273.jpg",
+    "testimony": "The game’s design and mechanics are engaging, which keeps players interested and motivated to keep playing and improving."
+  },
+  {
+    "name": "Emily Davis",
+    "image": "https://i.ibb.co/9s52wRL/avatar6.png",
+    "testimony": "The platform fosters a sense of community by allowing players to interact and build relationships with others who share their interest in badminton."
+  },
+  {
+    "name": "David Wilson",
+    "image": "https://i.ibb.co/h8zN7hc/pngtree-businessman-avatar-icon-flat-style-png-image-1917273.jpg",
+    "testimony": "The website performs well across different devices and screen sizes, providing a seamless experience for all users."
+  },
+  {
+    "name": "Olivia Adams",
+    "image": "https://i.ibb.co/9s52wRL/avatar6.png",
+    "testimony": "The ability for players to customize their profiles and track their progress adds a personal touch and encourages continued participation."
+  },
+  {
+    "name": "Daniel White",
+    "image": "https://i.ibb.co/h8zN7hc/pngtree-businessman-avatar-icon-flat-style-png-image-1917273.jpg",
+    "testimony": "The messaging and notification system works well for coordinating games and keeping players informed about match details and updates."
+  },
+  {
+    "name": "Sophia Turner",
+    "image": "https://i.ibb.co/9s52wRL/avatar6.png",
+    "testimony": "The availability of support and a feedback mechanism helps address any issues promptly and improve the overall user experience."
+  }
+]

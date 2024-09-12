@@ -1,0 +1,183 @@
+[
+    {
+      "id": 1,
+      "name": "Football",
+      "description": "Join our football program and enhance your soccer skills. Suitable for all ages and skill levels.",
+      "image1": "https://i.ibb.co/8M69gtp/football-5754946-1280.jpg",
+      "schedule": "Mondays, Wednesdays, and Fridays from 4 PM to 6 PM",
+      "coaches": [
+        {
+          "name": "John Smith",
+          "image": "john_smith.jpg"
+        },
+        {
+          "name": "Maria Rodriguez",
+          "image": "maria_rodriguez.jpg"
+        }
+      ],
+      "price": 150,
+      "duration": "10 weeks",
+      "availableSeats": 15
+    },
+    {
+      "id": 2,
+      "name": "Cricket",
+      "description": "Learn the art of cricket with our experienced coaches. Suitable for beginners and advanced players.",
+      "image1": "https://i.ibb.co/PjwMF9j/cricket-724621-1280.jpg",
+      "schedule": "Tuesdays and Thursdays from 5 PM to 7 PM",
+      "coaches": [
+        {
+          "name": "David Wilson",
+          "image": "david_wilson.jpg"
+        },
+        {
+          "name": "Sara Khan",
+          "image": "sara_khan.jpg"
+        }
+      ],
+      "price": 120,
+      "duration": "8 weeks",
+      "availableSeats": 12
+    },
+    {
+      "id": 3,
+      "name": "Tennis",
+      "description": "Improve your tennis skills with professional training. All skill levels are welcome.",
+      "image1": "https://i.ibb.co/9Y0VMCQ/tennis-5782695-1280.jpg",
+      "schedule": "Wednesdays and Saturdays from 3 PM to 5 PM",
+      "coaches": [
+        {
+          "name": "Michael Brown",
+          "image": "michael_brown.jpg"
+        },
+        {
+          "name": "Linda Johnson",
+          "image": "linda_johnson.jpg"
+        }
+      ],
+      "price": 130,
+      "duration": "9 weeks",
+      "availableSeats": 14
+    },
+    {
+      "id": 4,
+      "name": "Badminton",
+      "description": "Enjoy the fast-paced game of badminton. Suitable for players of all ages.",
+      "image1": "https://i.ibb.co/drrztJb/badminton-1428046-1280.jpg",
+      "schedule": "Mondays and Fridays from 6 PM to 8 PM",
+      "coaches": [
+        {
+          "name": "Chris Anderson",
+          "image": "chris_anderson.jpg"
+        },
+        {
+          "name": "Sophie White",
+          "image": "sophie_white.jpg"
+        }
+      ],
+      "price": 110,
+      "duration": "8 weeks",
+      "availableSeats": 16
+    },
+    {
+      "id": 5,
+      "name": "Rugby",
+      "description": "Experience the excitement of rugby. Ideal for players looking to build teamwork and strength.",
+      "image1": "https://i.ibb.co/dgcJB1g/kids-5556307-1280.jpg",
+      "schedule": "Saturdays and Sundays from 10 AM to 12 PM",
+      "coaches": [
+        {
+          "name": "Mark Davis",
+          "image": "mark_davis.jpg"
+        },
+        {
+          "name": "Emily Roberts",
+          "image": "emily_roberts.jpg"
+        }
+      ],
+      "price": 140,
+      "duration": "8 weeks",
+      "availableSeats": 18
+    },
+    {
+      "id": 6,
+      "name": "Baseball",
+      "description": "Learn the fundamentals of baseball with our skilled coaches. Perfect for young athletes.",
+      "image1": "https://i.ibb.co/RDb6Z5C/baseball-7985433-1280.jpg",
+      "schedule": "Tuesdays and Thursdays from 4 PM to 6 PM",
+      "coaches": [
+        {
+          "name": "Daniel Baker",
+          "image": "daniel_baker.jpg"
+        },
+        {
+          "name": "Olivia Scott",
+          "image": "olivia_scott.jpg"
+        }
+      ],
+      "price": 100,
+      "duration": "6 weeks",
+      "availableSeats": 10
+    },
+    {
+      "id": 7,
+      "name": "Basketball",
+      "description": "Dribble, shoot, and score with our basketball program. Suitable for all skill levels.",
+      "image1": "https://i.ibb.co/jywM4Zf/sports-5245098-1280.jpg",
+      "schedule": "Wednesdays and Fridays from 5 PM to 7 PM",
+      "coaches": [
+        {
+          "name": "Robert Turner",
+          "image": "robert_turner.jpg"
+        },
+        {
+          "name": "Amanda Hall",
+          "image": "amanda_hall.jpg"
+        }
+      ],
+      "price": 130,
+      "duration": "8 weeks",
+      "availableSeats": 14
+    },
+    {
+      "id": 8,
+      "name": "Swimming",
+      "description": "Take a dip and improve your swimming skills. Suitable for all ages and experience levels.",
+      "image1": "https://i.ibb.co/VtLSYXz/swimming-821622-1280.jpg",
+      "schedule": "Mondays and Thursdays from 6 PM to 8 PM",
+      "coaches": [
+        {
+          "name": "Richard Turner",
+          "image": "richard_turner.jpg"
+        },
+        {
+          "name": "Catherine Lewis",
+          "image": "catherine_lewis.jpg"
+        }
+      ],
+      "price": 120,
+      "duration": "10 weeks",
+      "availableSeats": 20
+    },
+    {
+      "id": 9,
+      "name": "Volleyball",
+      "description": "Take a dip and improve your volleyball skills. Suitable for all ages and experience levels.",
+      "image1": "https://i.ibb.co/7rFSHZ9/volleyball-1375498-1280.jpg",
+      "schedule": "Mondays and Thursdays from 6 PM to 8 PM",
+      "coaches": [
+        {
+          "name": "Richard Turner",
+          "image": "richard_turner.jpg"
+        },
+        {
+          "name": "Catherine Lewis",
+          "image": "catherine_lewis.jpg"
+        }
+      ],
+      "price": 120,
+      "duration": "10 weeks",
+      "availableSeats": 20
+    }
+  ]
+

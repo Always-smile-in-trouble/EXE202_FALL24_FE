@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .navbar_bg{
+        @apply bg-white dark:bg-gray-800 shadow-md;
+    }
+    .toggle_class{
+        @apply text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-1 md:py-1.5 transition-colors relative z-10;
+    }
+    .card_effect{
+        @apply transform transition-all ease-in duration-300
+    }
+    .facilities_card_img{
+        @apply block h-full w-full object-cover object-center shadow-lg transition-transform transform scale-100 group-hover:scale-105 duration-300;
+    }
+    .facilities_card_overlay{
+        @apply absolute inset-0 bg-gradient-to-t from-black to-transparent;
+    }
+    .active_link{
+        @apply text-amber-500 border-b-2 rounded-none border-b-amber-500;
+    }
+}
