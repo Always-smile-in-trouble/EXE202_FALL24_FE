@@ -21,11 +21,11 @@ const Index = () => {
         <div className="auth-signin-signup">
           <form action="#" className="auth-sign-in-form">
             <div
-              className="flex gap-2 items-center mb-3 mr-64"
+              className="flex gap-2 items-center mb-3 mr-auto lg:mr-64 w-full lg:w-auto"
               onClick={() => navigate(`/`)}
             >
-              <IoArrowBackCircleOutline />
-              <button>Back Home</button>
+              <IoArrowBackCircleOutline className="text-xl lg:text-2xl" />
+              <button className="text-sm lg:text-base">Back Home</button>
             </div>
             <h2 className="auth-title">Sign in</h2>
             <div className="auth-input-field">
@@ -55,11 +55,11 @@ const Index = () => {
           </form>
           <form action="#" className="auth-sign-up-form">
             <div
-              className="flex gap-2 items-center mb-3 mr-64"
+              className="flex gap-2 items-center mb-3 mr-auto lg:mr-64 w-full lg:w-auto"
               onClick={() => navigate(`/`)}
             >
-              <IoArrowBackCircleOutline />
-              <button>Back Home</button>
+              <IoArrowBackCircleOutline className="text-xl lg:text-2xl" />
+              <button className="text-sm lg:text-base">Back Home</button>
             </div>
             <h2 className="auth-title">Sign up</h2>
             <div className="auth-input-field">
