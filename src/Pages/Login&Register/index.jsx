@@ -110,7 +110,7 @@ const Index = () => {
             </button>
           </div>
           <img
-            src="src\Pages\Login&Register\image\illustration-cartoon-badminton-player-Graphics-12777778-1-1-580x386.png"
+            src="src\Pages\Login&Register\image\signin.svg"
             className="auth-image"
             alt="Log"
           />
@@ -130,7 +130,7 @@ const Index = () => {
             </button>
           </div>
           <img
-            src="src\Pages\Login&Register\image\badminton-illustration-download-in-svg-png-gif-file-formats--player-racket-hobbies-pack-sports-games-illustrations-1753871.webp"
+            src="src\Pages\Login&Register\image\signup.svg"
             className="auth-image"
             alt="Register"
           />
