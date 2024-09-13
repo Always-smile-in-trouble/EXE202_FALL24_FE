@@ -111,7 +111,7 @@ const Index = () => {
           </div>
           <img
             src="src\Pages\Login&Register\image\signin.svg"
-            className="auth-image"
+            className="auth-image mb-32"
             alt="Log"
           />
         </div>
