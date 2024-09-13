@@ -109,7 +109,11 @@ const Index = () => {
               Sign up
             </button>
           </div>
-          <img src="public\sign2.png" className="auth-image mb-12" alt="Log" />
+          <img
+            src="https://www.creativefabrica.com/wp-content/uploads/2021/06/01/illustration-cartoon-badminton-player-Graphics-12777778-1-1-580x386.png"
+            className="auth-image mb-12"
+            alt="Log"
+          />
         </div>
         <div className="auth-panel right-panel">
           <div className="auth-content">
@@ -125,7 +129,11 @@ const Index = () => {
               Sign in
             </button>
           </div>
-          <img src="public\sign1.png" className="auth-image" alt="Register" />
+          <img
+            src="https://cdni.iconscout.com/illustration/premium/thumb/badminton-illustration-download-in-svg-png-gif-file-formats--player-racket-hobbies-pack-sports-games-illustrations-1753871.png"
+            className="auth-image"
+            alt="Register"
+          />
         </div>
       </div>
     </div>
