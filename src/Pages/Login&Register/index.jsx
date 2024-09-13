@@ -109,11 +109,7 @@ const Index = () => {
               Sign up
             </button>
           </div>
-          <img
-            src="src\Pages\Login&Register\image\signin2.webp"
-            className="auth-image mb-32"
-            alt="Log"
-          />
+          <img src="public\sign2.png" className="auth-image mb-12" alt="Log" />
         </div>
         <div className="auth-panel right-panel">
           <div className="auth-content">
@@ -129,11 +125,7 @@ const Index = () => {
               Sign in
             </button>
           </div>
-          <img
-            src="src\Pages\Login&Register\image\signup2.webp"
-            className="auth-image"
-            alt="Register"
-          />
+          <img src="public\sign1.png" className="auth-image" alt="Register" />
         </div>
       </div>
     </div>
