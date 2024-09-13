@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiMoon, FiSun } from "react-icons/fi";
 import { motion } from "framer-motion";
 import logo from "../../../assets/logo/logo.png";
@@ -13,6 +13,7 @@ const Navbar = () => {
   const completion = useReadingProgress();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [navbarBg, setNavbarBg] = useState("transparent");
+  const navigate = useNavigate();
 
   /* control navbar bg */
   useEffect(() => {
@@ -94,8 +95,11 @@ const Navbar = () => {
           Contact Us
         </a>
       </li>
+      <li>
+        <a onClick={() => navigate(`/login`)}>Login</a>
+      </li>
       {/* if user logged then show this nav items */}
-      {user ? (
+      {/* {user ? (
         <>
           <li>
             <a>Dashboard</a>
@@ -121,7 +125,7 @@ const Navbar = () => {
             <Link to="/signin">Login</Link>
           </li>
         </>
-      )}
+      )} */}
     </>
   );
   return (

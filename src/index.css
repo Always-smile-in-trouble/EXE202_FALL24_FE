@@ -19,6 +19,9 @@
         @apply absolute inset-0 bg-gradient-to-t from-black to-transparent;
     }
     .active_link{
-        @apply text-amber-500 border-b-2 rounded-none border-b-amber-500;
+        @apply text-green-600 border-b-2 rounded-none border-b-amber-500;
+    }
+    .socialIcon {
+        @apply w-11 border-[1px] border-blue-400 border-solid h-11 rounded-full px-2 py-1 text-pink-500  hover:text-blue-400 cursor-pointer transition duration-200 hover:animate-pulse;
     }
 }
