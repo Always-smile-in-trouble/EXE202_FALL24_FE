@@ -10,7 +10,7 @@ const AboutUs = () => {
     <div className="dark:bg-gray-700 bg-amber-200 pb-10 lg:pb-20" id="aboutus">
       <SectionHeader heading={"About Us"}></SectionHeader>
       <Container>
-        <div className="grid grid-cols-1 gap-10">
+        <div className="grid grid-cols-1 gap-10 mt-[-45px]">
           <FadeInAnimation>
             <div className="flex flex-col lg:flex-row-reverse justify-center items-center gap-10">
               <div className="">
@@ -21,17 +21,22 @@ const AboutUs = () => {
                   alt=""
                 />
               </div>
-              <div>
-                <div className="flex flex-col justify-center items-start mb-5 ml-80">
-                  <img className="w-24" src={game} alt="logo" loading="lazy" />
+              <div className="flex flex-col items-center text-center lg:text-left">
+                <div className="mb-5">
+                  <img
+                    className="w-24 mx-auto"
+                    src={game}
+                    alt="logo"
+                    loading="lazy"
+                  />
                   <p className="text-green-700 font-second_font">
                     ShuttleSmash
                   </p>
                 </div>
                 <Reavel>
-                  <p className="dark:text-white text-slate-700 ml-44 font-semibold">
+                  <p className="dark:text-white text-slate-700 font-bold text-xl mb-1">
                     Welcome to{" "}
-                    <span className="font-semibold">
+                    <span className="font-bold">
                       The Shuttle Smash Matching Teamates!
                     </span>
                   </p>
@@ -70,7 +75,9 @@ const AboutUs = () => {
               <div>
                 <div className="dark:text-white text-slate-700">
                   <Reavel>
-                    <p className="font-bold text-xl mb-2">What We Offer:</p>
+                    <p className="font-bold text-xl mb-2 text-center lg:text-left">
+                      What We Offer:
+                    </p>
                   </Reavel>
                   <ul className="list-disc ps-6">
                     <Reavel>
@@ -84,13 +91,11 @@ const AboutUs = () => {
                       </li>
                     </Reavel>
                     <Reavel>
-                      {" "}
                       <li>
                         <span className="font-semibold">
                           Community Engagement:
                         </span>{" "}
-                        {""}
-                        oin a vibrant community of badminton players. Engage
+                        Join a vibrant community of badminton players. Engage
                         with fellow enthusiasts, share tips, and get inspired by
                         others who share your passion for the game.
                       </li>
@@ -111,7 +116,6 @@ const AboutUs = () => {
                         <span className="font-semibold">
                           User-Friendly Interface:
                         </span>{" "}
-                        {""}
                         Enjoy a seamless experience with our easy-to-navigate
                         platform. Our user-friendly design ensures that finding
                         and connecting with teammates is simple and enjoyable.

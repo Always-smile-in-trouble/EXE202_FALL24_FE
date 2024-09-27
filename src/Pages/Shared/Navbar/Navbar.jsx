@@ -44,34 +44,20 @@ const Navbar = () => {
       <li>
         <a
           href="#home"
-          className={activeNav === "#home" ? " active_link" : ""}
+          className={`${
+            activeNav === "#home" ? "active_link" : ""
+          } hover:text-green-500`}
           onClick={() => setActiveNav("#home")}
         >
           Home
         </a>
       </li>
-      {/* <li>
-        <a
-          href="#programmes"
-          className={activeNav === "#programmes" ? " active_link" : ""}
-          onClick={() => setActiveNav("#programmes")}
-        >
-          Sports
-        </a>
-      </li>
-      <li>
-        <a
-          href="#facilities"
-          className={activeNav === "#facilities" ? " active_link" : ""}
-          onClick={() => setActiveNav("#facilities")}
-        >
-          Facilities
-        </a>
-      </li> */}
       <li>
         <a
           href="#instructors"
-          className={activeNav === "#instructors" ? " active_link" : ""}
+          className={`${
+            activeNav === "#instructors" ? "active_link" : ""
+          } hover:text-green-500`}
           onClick={() => setActiveNav("#instructors")}
         >
           Teamates
@@ -80,7 +66,9 @@ const Navbar = () => {
       <li>
         <a
           href="#aboutus"
-          className={activeNav === "#aboutus" ? " active_link" : ""}
+          className={`${
+            activeNav === "#aboutus" ? "active_link" : ""
+          } hover:text-green-500`}
           onClick={() => setActiveNav("#aboutus")}
         >
           About Us
@@ -89,14 +77,18 @@ const Navbar = () => {
       <li>
         <a
           href="#contactus"
-          className={activeNav === "#contactus" ? " active_link" : ""}
+          className={`${
+            activeNav === "#contactus" ? "active_link" : ""
+          } hover:text-green-500`}
           onClick={() => setActiveNav("#contactus")}
         >
           Contact Us
         </a>
       </li>
       <li>
-        <a onClick={() => navigate(`/login`)}>Login</a>
+        <a onClick={() => navigate(`/login`)} className="hover:text-green-500">
+          Login
+        </a>
       </li>
       {/* if user logged then show this nav items */}
       {/* {user ? (
@@ -135,7 +127,7 @@ const Navbar = () => {
         <img className="w-20" src={game} alt="logo" />
       </div>
       <div
-        className={`navbar top-0 transition-all ease-out duration-300  text-white lg:fixed z-50 py-3 md:px-8 ${
+        className={`navbar top-0 transition-all ease-out duration-300 text-white lg:fixed z-50 py-3 md:px-8 ${
           navbarBg !== "transparent" ? "navbar_bg" : "lg:py-4 py-5"
         }`}
       >
@@ -143,7 +135,7 @@ const Navbar = () => {
           <div className="dropdown">
             <label
               tabIndex={0}
-              className="btn btn-ghost bg-black/70 lg:hidden hover:bg-black/80  "
+              className="btn btn-ghost bg-black/70 lg:hidden hover:bg-black/80 "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
