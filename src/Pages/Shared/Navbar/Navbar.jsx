@@ -131,7 +131,7 @@ const Navbar = () => {
   return (
     <>
       {/* for small display */}
-      <div className="lg:hidden bg-red-500 flex justify-center items-center py-2">
+      <div className="lg:hidden bg-green-500 flex justify-center items-center py-2">
         <img className="w-20" src={game} alt="logo" />
       </div>
       <div
@@ -143,7 +143,7 @@ const Navbar = () => {
           <div className="dropdown">
             <label
               tabIndex={0}
-              className="btn btn-ghost bg-red-500 lg:hidden hover:bg-red-600"
+              className="btn btn-ghost bg-black/70 lg:hidden hover:bg-black/80  "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +162,7 @@ const Navbar = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-red-500 dark:bg-gray-700 rounded-box w-52"
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-green-500 dark:bg-gray-700 rounded-box w-52"
             >
               {navOptions}
             </ul>
