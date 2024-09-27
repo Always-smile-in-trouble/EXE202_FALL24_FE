@@ -4,7 +4,7 @@
 
 @layer components{
     .navbar_bg{
-        @apply bg-white dark:bg-gray-800 shadow-md;
+        @apply bg-white dark:bg-gray-700 shadow-md;
     }
     .toggle_class{
         @apply text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-1 md:py-1.5 transition-colors relative z-10;
