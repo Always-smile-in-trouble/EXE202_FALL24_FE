@@ -112,8 +112,7 @@ const QuickContact = () => {
               <div className="text-white">
                 <p className="font-normal">Want to visit Us? our address</p>
                 <p className="text-xl font-bold">
-                  Lot E2a-7, Road D1, D1 Street, Long Thanh My, Thu Duc City, Ho
-                  Chi Minh City 700000
+                  Thu Duc City, Ho Chi Minh City
                 </p>
               </div>
             </div>
