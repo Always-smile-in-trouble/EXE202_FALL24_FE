@@ -159,7 +159,7 @@ const Navbar = () => {
               {navOptions}
             </ul>
           </div>
-          <Link to="/" className="cursor-pointer hidden md:block">
+          <Link to="/home" className="cursor-pointer hidden md:block">
             {navbarBg !== "transparent" ? (
               <div>
                 <img className="w-20" src={game} />
