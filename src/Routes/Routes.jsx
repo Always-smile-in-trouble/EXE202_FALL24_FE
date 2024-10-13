@@ -4,6 +4,10 @@ import Home from "../Pages/Home/Home/Home";
 import Error from "../Pages/Shared/Error/Error";
 import LoginAndRegister from "../Pages/Login&Register";
 import LoadingPage from "../Components/LoadingPages";
+import CreateAccount from "../Pages/CreateAccount";
+import NavbarInside from "../Pages/Shared/Navbar/Navbar2";
+import Matching from "../Pages/Matching";
+// import { AnimatedModalDemo } from "../Pages/Matching/index2";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +28,22 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginAndRegister />,
+  },
+  {
+    path: "/matching",
+    element: <Matching />,
+  },
+  // {
+  //   path: "/aniamtedmodal",
+  //   element: <AnimatedModalDemo />,
+  // },
+  {
+    path: "/createaccount",
+    element: <CreateAccount />,
+  },
+  {
+    path: "/navbar2",
+    element: <NavbarInside />,
   },
   {
     path: "*",
