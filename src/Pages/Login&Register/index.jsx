@@ -3,8 +3,16 @@ import "./index.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import api from "../../config/axios";
+import { useDispatch } from "react-redux";
+import { register } from "../../redux/features/userSlice";
+import { toast } from "react-toastify";
 const Index = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSignUpClick = () => {
@@ -13,6 +21,18 @@ const Index = () => {
 
   const handleSignInClick = () => {
     setIsSignUpMode(false);
+  };
+
+  const handleSignUpSubmit = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Password is not match!");
+    } else {
+      dispatch(register({ email: email, password: password }));
+      setEmail("");
+      setPassword("");
+      navigate(`/createaccount`);
+    }
   };
 
   return (
@@ -53,7 +73,11 @@ const Index = () => {
               </a>
             </div>
           </form>
-          <form action="#" className="auth-sign-up-form">
+          <form
+            action="#"
+            className="auth-sign-up-form"
+            onSubmit={handleSignUpSubmit}
+          >
             <div
               className="flex gap-2 items-center mb-3 mr-auto lg:mr-64 w-full lg:w-auto"
               onClick={() => navigate(`/home`)}
@@ -63,16 +87,31 @@ const Index = () => {
             </div>
             <h2 className="auth-title">Sign up</h2>
             <div className="auth-input-field">
-              <i className="fas fa-user"></i>
-              <input type="text" placeholder="Username" />
-            </div>
-            <div className="auth-input-field">
               <i className="fas fa-envelope"></i>
-              <input type="email" placeholder="Email" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="auth-input-field">
               <i className="fas fa-lock"></i>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="auth-input-field">
+              <i className="fas fa-lock"></i>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
             </div>
             <input type="submit" className="auth-btn" value="Sign up" />
             <p className="auth-social-text">Or Sign up with social platforms</p>

@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
+import { IoMdInformationCircle } from "react-icons/io";
+import { IoFlag, IoShieldSharp } from "react-icons/io5";
 
 const profiles = [
   {
@@ -63,6 +65,15 @@ function Matching() {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const cardRefs = useRef([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
   const onSwipe = (direction, name) => {
     console.log("You swiped: " + direction + " on " + name);
@@ -165,16 +176,60 @@ function Matching() {
                 {/* Name, age, and See Profile button */}
                 <div className="mt-[390px]">
                   {" "}
-                  <div className="p-4 flex items-center bg-transparent bg-opacity-80">
-                    <h2 className="text-2xl font-bold text-white">
-                      {profile.name}, {profile.age}
-                    </h2>
-                    <button
-                      onClick={() => handleSeeProfile(profile)}
-                      className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
-                    >
-                      See Profile...
+                  <div className="p-4 flex justify-between items-center bg-transparent bg-opacity-80">
+                    <div className="flex gap-1">
+                      <h2 className="text-2xl font-bold text-white">
+                        {profile.name}, {profile.age}
+                      </h2>
+                      <button
+                        onClick={() => handleSeeProfile(profile)}
+                        className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
+                      >
+                        See Profile...
+                      </button>
+                    </div>
+                    <button className="" onClick={openModal}>
+                      <IoMdInformationCircle className="text-2xl text-white" />
                     </button>
+                    {isOpen && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
+                          {/* Tiêu đề */}
+                          <h2 className="text-2xl font-semibold text-center text-green-600 mb-6">
+                            Safety Toolkit
+                          </h2>
+
+                          {/* Section: Report */}
+                          <div className="mb-4">
+                            <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 cursor-pointer">
+                              <IoFlag className="text-red-500 text-xl" />
+                              <span className="text-black text-lg font-medium">
+                                REPORT
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Section: Safety Tips */}
+                          <div className="mb-4">
+                            <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 cursor-pointer">
+                              <IoShieldSharp className="text-blue-500 text-xl" />
+                              <span className="text-black text-lg font-medium">
+                                SAFETY TIPS
+                              </span>
+                            </div>
+                          </div>
+                          {/* Cancel Button */}
+                          <div className="flex justify-center">
+                            <button
+                              onClick={closeModal}
+                              className="text-gray-500 hover:text-black px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                            >
+                              CANCEL
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {/* Tags */}
                   <div className="flex flex-wrap overflow-hidden bg-transparent bg-opacity-80 p-2 rounded-lg">
