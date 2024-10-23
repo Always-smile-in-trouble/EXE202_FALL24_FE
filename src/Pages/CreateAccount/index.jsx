@@ -6,23 +6,24 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { IoLocationOutline } from "react-icons/io5";
 import { PlusOutlined } from "@ant-design/icons";
-import { Image, Upload } from "antd";
+import { Button, Image, Upload } from "antd";
 import "./index.scss";
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
+import uploadFile from "../../config/upload";
+// const getBase64 = (file) =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
 
 const CreateAccount = () => {
   // State để quản lý việc hiển thị form và lưu trữ thông tin
   const [gender, setGender] = useState("");
   const [level, setLevel] = useState("");
   const [times, setTimes] = useState([]);
-  const selectedEmail = useSelector((store) => store.user.email);
-  const selectedPassword = useSelector((store) => store.user.password);
+  const selectedEmail = useSelector((store) => store.userRegister.email);
+  const selectedPassword = useSelector((store) => store.userRegister.password);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
@@ -67,7 +68,17 @@ const CreateAccount = () => {
 
   const registerUser = async (e) => {
     e.preventDefault();
+    if (fileList.length < 2) {
+      toast.error("Please upload at least 2 photos.");
+      return;
+    }
     try {
+      if (fileList.length > 0) {
+        const uploadedUrls = await Promise.all(
+          fileList.map((file) => uploadFile(file.originFileObj))
+        );
+        setUserData({ ...userData, photo: uploadedUrls });
+      }
       const response = await api.post("/user/v1/register", userData);
       console.log(response.data);
     } catch (error) {
@@ -95,9 +106,29 @@ const CreateAccount = () => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-  const handleChange = ({ fileList: newFileList }) => {
+  // const handleChange = ({ fileList: newFileList }) => {
+  //   setFileList(newFileList);
+  //   // setUserData({ ...userData, photo: fileList.map((file) => file.uid) });
+  //   const updatedPhotos = newFileList.map((file) => ({
+  //     url: file.url || file.preview, // Use the URL if available or the base64 data URL
+  //   }));
+  //   setUserData({ ...userData, photo: updatedPhotos });
+  // };
+  const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    setUserData({ ...userData, photo: fileList });
+    const updatedPhotos = newFileList
+      .map((file) => {
+        if (file.status === "done") {
+          return file.response?.url || file.url || file.preview;
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    setUserData((prevData) => ({
+      ...prevData,
+      photo: updatedPhotos,
+    }));
   };
   const uploadButton = (
     <button
@@ -207,7 +238,7 @@ const CreateAccount = () => {
                     type="text"
                     name="dob"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
-                    placeholder="YYYY/MM/DD"
+                    placeholder="YYYY-MM-DD"
                     value={userData.dob}
                     onChange={handleInputChange}
                   />

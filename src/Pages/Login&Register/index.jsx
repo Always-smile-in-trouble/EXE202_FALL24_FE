@@ -5,15 +5,25 @@ import { useNavigate } from "react-router-dom";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import api from "../../config/axios";
 import { useDispatch } from "react-redux";
-import { register } from "../../redux/features/userSlice";
+import { login, register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
+import { userLoginSlice } from "../../redux/features/userLoginSlice";
 const Index = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailLogin, setEmailLogin] = useState("");
+  const [passwordLogin, setPasswordLogin] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formValues = Object.fromEntries(formData.entries());
+    console.log(formValues.data);
+  };
 
   const handleSignUpClick = () => {
     setIsSignUpMode(true);
@@ -31,7 +41,25 @@ const Index = () => {
       dispatch(register({ email: email, password: password }));
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
       navigate(`/createaccount`);
+    }
+  };
+
+  const Login = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/user/v1/login", {
+        email: emailLogin,
+        password: passwordLogin,
+      });
+      toast.success("Đăng nhập thành công!");
+      console.log(res.data.data);
+      localStorage.setItem("token", res.data.data.accessToken);
+      // dispatch(login(res.data));
+      navigate("/matching");
+    } catch (e) {
+      toast.error(e.response.data.message);
     }
   };
 
@@ -39,7 +67,12 @@ const Index = () => {
     <div className={`auth-container ${isSignUpMode ? "sign-up-mode" : ""}`}>
       <div className="auth-forms-container">
         <div className="auth-signin-signup">
-          <form action="#" className="auth-sign-in-form">
+          <form
+            action="#"
+            className="auth-sign-in-form"
+            onSubmit={Login}
+            onChange={handleSubmit}
+          >
             <div
               className="flex gap-2 items-center mb-3 mr-auto lg:mr-64 w-full lg:w-auto"
               onClick={() => navigate(`/home`)}
@@ -50,11 +83,23 @@ const Index = () => {
             <h2 className="auth-title">Sign in</h2>
             <div className="auth-input-field">
               <i className="fas fa-user"></i>
-              <input type="text" placeholder="Username" />
+              <input
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={emailLogin}
+                onChange={(e) => setEmailLogin(e.target.value)}
+              />
             </div>
             <div className="auth-input-field">
               <i className="fas fa-lock"></i>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={passwordLogin}
+                onChange={(e) => setPasswordLogin(e.target.value)}
+              />
             </div>
             <input type="submit" value="Login" className="auth-btn solid" />
             <p className="auth-social-text">Or Sign in with social platforms</p>

@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: "userRegister",
   initialState,
   reducers: {
     register: (state, action) => {
@@ -16,10 +16,11 @@ export const userSlice = createSlice({
       return state;
     },
     clear: () => {
+      localStorage.removeItem("token");
       return null;
     },
   },
 });
 
-export const { register, clear } = userSlice.actions;
+export const { register, clear, login } = userSlice.actions;
 export default userSlice.reducer;

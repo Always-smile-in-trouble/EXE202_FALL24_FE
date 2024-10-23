@@ -8,8 +8,6 @@ import CreateAccount from "../Pages/CreateAccount";
 import NavbarInside from "../Pages/Shared/Navbar/Navbar2";
 import Matching from "../Pages/Matching";
 import MemberShip from "../Pages/MemberShip";
-// import MemberShip2 from "../Pages/MemberShip/index2";
-// import { AnimatedModalDemo } from "../Pages/Matching/index2";
 
 const router = createBrowserRouter([
   {
@@ -32,10 +30,6 @@ const router = createBrowserRouter([
     element: <LoginAndRegister />,
   },
   {
-    path: "/membership",
-    element: <MemberShip />,
-  },
-  {
     path: "/matching",
     element: <Matching />,
   },
@@ -46,6 +40,10 @@ const router = createBrowserRouter([
   {
     path: "/navbar2",
     element: <NavbarInside />,
+  },
+  {
+    path: "/membership",
+    element: <MemberShip />,
   },
   {
     path: "*",

@@ -1,147 +1,90 @@
-import React, { useState } from "react";
-import "./index.scss";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.min.js";
+import React, { useEffect, useState } from "react";
+import "./membership.scss";
+import api from "../../config/axios";
 
 function MemberShip() {
-  const [activeTab, setActiveTab] = useState("yearly");
+  const [memberships, setMemberships] = useState([]);
+
+  // Lấy thông tin gói đăng ký từ API
+  async function fetchMembership() {
+    const response = await api.get("/subscription/v1/getAll");
+    console.log(response.data.data);
+    setMemberships(response.data.data);
+  }
+
+  useEffect(() => {
+    fetchMembership();
+  }, []);
 
   return (
-    <div className="maincontainer">
+    <section className="pricing-table">
       <div className="container">
-        <div className="text-center flex justify-center">
-          <div className="nav price-tabs flex justify-evenly" role="tablist">
-            <a
-              className={`nav-link ${activeTab === "yearly" ? "active" : ""}`}
-              href="#yearly"
-              role="tab"
-              onClick={() => setActiveTab("yearly")}
-            >
-              Yearly
-            </a>
-            <a
-              className={`nav-link ${activeTab === "monthly" ? "active" : ""}`}
-              href="#monthly"
-              role="tab"
-              onClick={() => setActiveTab("monthly")}
-            >
-              Monthly
-            </a>
-          </div>
+        <div className="block-heading">
+          <h2>Gói Đăng Ký</h2>
+          <p>
+            Chọn gói đăng ký phù hợp để nâng cấp trải nghiệm cộng đồng cầu lông
+            của chúng tôi và tìm kiếm đồng đội.
+          </p>
         </div>
-
-        <div
-          className="tab-content wow fadeIn mt-4"
-          style={{ visibility: "visible", animationName: "fadeIn" }}
-        >
-          {activeTab === "yearly" && (
-            <div
-              role="tabpanel"
-              className="tab-pane fade show active"
-              id="yearly"
-            >
-              <div className="row justify-content-center">
-                <div className="col-md-6 col-lg-4 mb-30">
-                  <div className="price-item text-center">
-                    <div className="price-top">
-                      <h4>Personal</h4>
-                      <h2 className="mb-0">
-                        <sup>$</sup>99
-                      </h2>
-                      <span className="text-capitalize">per year</span>
-                    </div>
-                    <div className="price-content">
-                      <ul className="border-bottom mb-30 mt-md-4 pb-3 text-left">
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Eget erovtiu faucid</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Cras justo odio</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Morbi leo risus</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span>Porta consectetur ac</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span> Vestibulum at eros</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span>Adipisci atque beatae</span>
-                        </li>
-                      </ul>
-                      <a href="#" className="btn btn-custom">
-                        Buy now
-                      </a>
-                    </div>
-                  </div>
+        <div className="row">
+          {memberships.map((membership) => (
+            <div key={membership.id} className="col-md-5 col-lg-4">
+              <div className="item">
+                {/* Hiển thị ribbon cho gói DIAMOND */}
+                {membership.name === "DIAMOND" && (
+                  <div className="ribbon">Best Values</div>
+                )}
+                <div className="heading">
+                  <h3>
+                    {/* Tùy chỉnh tên gói nếu cần */}
+                    {membership.name === "FREE"
+                      ? "GÓI MIỄN PHÍ"
+                      : membership.name === "DIAMOND"
+                      ? "GÓI CAO CẤP"
+                      : "GÓI NGẮN HẠN"}
+                  </h3>
                 </div>
+                <p>
+                  {/* Tùy chỉnh giới thiệu cho từng gói */}
+                  {membership.name === "FREE"
+                    ? "Gói miễn phí cho người mới."
+                    : membership.name === "DIAMOND"
+                    ? "Gói cao cấp với nhiều ưu đãi."
+                    : "Gói cho người dùng ngắn hạn."}
+                </p>
+                <div className="features">
+                  <h4>
+                    <span className="feature">Giá</span>:{" "}
+                    <span className="value">${membership.price}</span>
+                  </h4>
+                  <h4>
+                    <span className="feature">Thời gian</span>:{" "}
+                    <span className="value">
+                      {membership.durationDays} Ngày
+                    </span>
+                  </h4>
+                  <h4>
+                    <span className="feature">Số lượt thích mỗi ngày</span>:{" "}
+                    <span className="value">{membership.likesPerDay}</span>
+                  </h4>
+                </div>
+                <div className="price">
+                  <h4>
+                    ${membership.price === 0 ? "MIỄN PHÍ" : membership.price}
+                  </h4>
+                </div>
+                <button
+                  className="btn btn-block btn-outline-primary"
+                  type="submit"
+                >
+                  BUY NOW
+                </button>
               </div>
             </div>
-          )}
-
-          {activeTab === "monthly" && (
-            <div
-              role="tabpanel"
-              className="tab-pane fade show active"
-              id="monthly"
-            >
-              <div className="row justify-content-center">
-                <div className="col-md-6 col-lg-4 mb-30">
-                  <div className="price-item text-center popular">
-                    <div className="price-top">
-                      <h4>Business</h4>
-                      <h2 className="mb-0">
-                        <sup>$</sup>59
-                      </h2>
-                      <span className="text-capitalize">per month</span>
-                    </div>
-                    <div className="price-content">
-                      <ul className="border-bottom mb-30 mt-md-4 pb-3 text-left">
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Eget erovtiu faucid</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Cras justo odio</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-check mr-2"></i>
-                          <span className="c-black">Morbi leo risus</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span>Porta consectetur ac</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span> Vestibulum at eros</span>
-                        </li>
-                        <li>
-                          <i className="zmdi zmdi-close mr-2"></i>
-                          <span>Adipisci atque beatae</span>
-                        </li>
-                      </ul>
-                      <a href="#" className="btn btn-custom btn-light">
-                        Buy now
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
