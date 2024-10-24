@@ -8,6 +8,7 @@ import CreateAccount from "../Pages/CreateAccount";
 import NavbarInside from "../Pages/Shared/Navbar/Navbar2";
 import Matching from "../Pages/Matching";
 import MemberShip from "../Pages/MemberShip";
+import PaymentStatus from "../Pages/PaymentReturn";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/membership",
     element: <MemberShip />,
+  },
+  {
+    path: "/paymentReturn",
+    element: <PaymentStatus />,
   },
   {
     path: "*",

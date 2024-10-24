@@ -10,9 +10,11 @@ export const userLoginSlice = createSlice({
   reducers: {
     login: (state, actions) => {
       state = actions.payload;
-      state.accessToken = actions.payload.accessToken;
       state.email = actions.payload.email;
+      state.accessToken = actions.payload.accessToken;
       return state;
     },
   },
 });
+
+export const { login } = userLoginSlice.actions;

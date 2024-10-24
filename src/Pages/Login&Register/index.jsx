@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import api from "../../config/axios";
 import { useDispatch } from "react-redux";
-import { login, register } from "../../redux/features/userSlice";
+import { register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
-import { userLoginSlice } from "../../redux/features/userLoginSlice";
+import { login, userLoginSlice } from "../../redux/features/userLoginSlice";
 const Index = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState("");
@@ -56,10 +56,10 @@ const Index = () => {
       toast.success("Đăng nhập thành công!");
       console.log(res.data.data);
       localStorage.setItem("token", res.data.data.accessToken);
-      // dispatch(login(res.data));
-      navigate("/matching");
+      dispatch(login(res.data.data));
+      // navigate("/matching");
     } catch (e) {
-      toast.error(e.response.data.message);
+      toast.error(e.response.message);
     }
   };
 

@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./membership.scss";
 import api from "../../config/axios";
+import { useNavigate } from "react-router-dom";
 
 function MemberShip() {
   const [memberships, setMemberships] = useState([]);
+  const navigate = useNavigate();
+
+  async function paymentPayOS(subscriptionId) {
+    const res = await api.post("/payos/v1/subscriptionPayment", {
+      subscriptionId,
+      redirectUrl: "https://shuttle-smash.vercel.app/paymentReturn",
+    });
+    console.log(res.data.data.paymentUrl);
+    window.location.href = res.data.data.paymentUrl;
+  }
 
   // Lấy thông tin gói đăng ký từ API
   async function fetchMembership() {
@@ -76,6 +87,9 @@ function MemberShip() {
                 <button
                   className="btn btn-block btn-outline-primary"
                   type="submit"
+                  onClick={() => {
+                    paymentPayOS(membership.id);
+                  }}
                 >
                   BUY NOW
                 </button>

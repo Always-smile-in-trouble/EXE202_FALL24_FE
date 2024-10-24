@@ -4,7 +4,7 @@ import { userLoginSlice } from "./features/userLoginSlice";
 
 const rootReducer = combineReducers({
   userRegister: userSlice.reducer,
-  userLogin: userLoginSlice,
+  userLogin: userLoginSlice.reducer,
 });
 
 export default rootReducer;
