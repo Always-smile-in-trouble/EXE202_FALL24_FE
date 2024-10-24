@@ -166,7 +166,12 @@ function Matching() {
             </span>
           </div>
           <div className="flex space-x-4">
-            <i className="fas fa-cog text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
+            <i
+              className="fas fa-cog text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+              onClick={() => {
+                navigate(`/membership`);
+              }}
+            ></i>
             <i className="fas fa-bell text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
             <i
               className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
