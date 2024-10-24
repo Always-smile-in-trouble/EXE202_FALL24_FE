@@ -57,7 +57,7 @@ const Index = () => {
       console.log(res.data.data);
       localStorage.setItem("token", res.data.data.accessToken);
       dispatch(login(res.data.data));
-      // navigate("/matching");
+      navigate("/matching");
     } catch (e) {
       toast.error(e.response.message);
     }
