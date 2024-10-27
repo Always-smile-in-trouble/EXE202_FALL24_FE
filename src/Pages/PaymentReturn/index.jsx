@@ -9,7 +9,7 @@ function PaymentStatus() {
   const orderCode = query.get("orderCode");
   const navigate = useNavigate();
 
-  const isPaymentSuccess = status === "PAID" && cancel === "false";
+  const isPaymentSuccess = status === "PAID";
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -22,7 +22,7 @@ function PaymentStatus() {
             <p className="text-gray-500 mt-2">Order Code: {orderCode}</p>
             <button
               className="mt-6 bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
-              onClick={() => navigate(`/membership`)}
+              onClick={() => navigate(`/matching`)}
             >
               Back to Home
             </button>

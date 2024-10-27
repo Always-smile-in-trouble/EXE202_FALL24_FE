@@ -10,7 +10,7 @@ function MemberShip() {
   async function paymentPayOS(subscriptionId) {
     const res = await api.post("/payos/v1/subscriptionPayment", {
       subscriptionId,
-      redirectUrl: "https://shuttle-smash.vercel.app/paymentReturn",
+      redirectUrl: "http://localhost:5173/paymentReturn",
     });
     console.log(res.data.data.paymentUrl);
     window.location.href = res.data.data.paymentUrl;

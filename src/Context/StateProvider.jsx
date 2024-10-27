@@ -30,7 +30,8 @@ export const StateProvider = ({ children }) => {
     setChangeSection,
     realtime,
     setRealtime,
-    demo, setDemo,
+    demo,
+    setDemo,
   };
 
   return (
