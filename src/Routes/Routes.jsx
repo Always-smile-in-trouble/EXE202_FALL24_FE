@@ -9,6 +9,9 @@ import NavbarInside from "../Pages/Shared/Navbar/Navbar2";
 import Matching from "../Pages/Matching";
 import MemberShip from "../Pages/MemberShip";
 import PaymentStatus from "../Pages/PaymentReturn";
+import Dashboard from "../Pages/Dashboard/dashboard";
+import User from "../Pages/Dashboard/User/User";
+// import { AnimatedModalDemo } from "../Pages/Matching/index2";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +56,18 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <Navigate to="/" replace />, // Chuyển hướng bất kỳ đường dẫn nào không xác định về LoadingPage
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/user",
+    element: <User />,
+  },
+  {
+    path: "/payment",
+    element: <Dashboard />,
   },
 ]);
 
