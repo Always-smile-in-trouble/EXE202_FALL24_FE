@@ -90,34 +90,6 @@ const Navbar = () => {
           Login
         </a>
       </li>
-      {/* if user logged then show this nav items */}
-      {/* {user ? (
-        <>
-          <li>
-            <a>Dashboard</a>
-          </li>
-          <div className="tooltip tooltip-bottom" data-tip={user.displayName}>
-            <img
-              className="w-10 rounded-full dark:border-white border-red-600 border mx-4"
-              src={
-                user.photoURL
-                  ? user.photoURL
-                  : "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1024px-User-avatar.svg.png"
-              }
-              alt=""
-            />
-          </div>
-          <button className="btn-sm ms-3 bg-amber-500 hover:bg-amber-600 text-white rounded">
-            Log Out
-          </button>
-        </>
-      ) : (
-        <>
-          <li>
-            <Link to="/signin">Login</Link>
-          </li>
-        </>
-      )} */}
     </>
   );
   return (
@@ -163,12 +135,12 @@ const Navbar = () => {
             {navbarBg !== "transparent" ? (
               <div>
                 <img className="w-20" src={game} />
-                <p className="text-green-500 font-second_font">ShuttleSmash</p>
+                <p className="text-green-500 font-second_font">ShuttleMatch</p>
               </div>
             ) : (
               <div>
                 <img className="w-20" src={game1} />
-                <p className="font-second_font">ShuttleSmash</p>
+                <p className="font-second_font">ShuttleMatch</p>
               </div>
             )}
           </Link>

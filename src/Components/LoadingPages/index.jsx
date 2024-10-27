@@ -34,7 +34,7 @@ function LoadingPage() {
         className="mt-4 text-white text-3xl md:text-4xl lg:text-5xl font-second_font font-serif transition-opacity duration-1000"
         style={{ opacity: fadeOut ? 0 : 1 }}
       >
-        ShuttleSmash
+        ShuttleMatch
       </h1>
     </div>
   );

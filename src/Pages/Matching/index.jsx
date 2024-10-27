@@ -1,5 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
+import { IoMdInformationCircle } from "react-icons/io";
+import { IoFlag, IoShieldSharp } from "react-icons/io5";
+import api from "../../config/axios";
+import { Image } from "antd";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clear } from "../../redux/features/userSlice";
+import { FaLocationDot } from "react-icons/fa6";
 
 const profiles = [
   {
@@ -44,18 +53,18 @@ const profiles = [
     ],
     tags: ["Art", "Movies", "Music", "Sports", "Photography"],
   },
-  {
-    name: "Bich",
-    age: 21,
-    images: [
-      "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-      "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-      "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-      "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-      "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-    ],
-    tags: ["Art", "Movies", "Music", "Sports", "Photography"],
-  },
+  // {
+  //   name: "Bich",
+  //   age: 21,
+  //   images: [
+  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
+  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
+  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
+  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
+  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
+  //   ],
+  //   tags: ["Art", "Movies", "Music", "Sports", "Photography"],
+  // },
 ];
 
 function Matching() {
@@ -63,14 +72,29 @@ function Matching() {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const cardRefs = useRef([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [userProfile, setUserProfile] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [reportUserId, setReportUserId] = useState(null);
+  const [reportReason, setReportReason] = useState("");
+  const openModal = (id) => {
+    setReportUserId(id);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
   const onSwipe = (direction, name) => {
     console.log("You swiped: " + direction + " on " + name);
   };
 
-  const handleSeeProfile = (profile) => {
-    setSelectedProfile(profile);
-  };
+  // const handleSeeProfile = (profile) => {
+  //   getInforById(profile.id);
+  // };
 
   const handleCloseModal = () => {
     setSelectedProfile(null);
@@ -89,22 +113,72 @@ function Matching() {
     cardRefs.current[index].swipe("right");
   };
 
+  async function reportUser(toUserId, reason) {
+    const response = await api.post("/report/v1/report", {
+      toUserId,
+      reason,
+    });
+  }
+
+  async function getInforById(id) {
+    try {
+      const response = await api.get(`/user/v1/getInfo/${id}`);
+      console.log(response.data);
+      setSelectedProfile(response.data);
+    } catch (e) {
+      toast.error("Error");
+    }
+  }
+
+  async function fetchDataUser() {
+    const response = await api.get("/user/v1/getAll");
+    console.log(response.data.data);
+    const datas = response.data.data;
+    console.log(datas);
+    setUsers(datas);
+  }
+
+  async function fetchProfile() {
+    const response = await api.get("/user/v1/getUserInfo");
+    console.log(response.data.data);
+    setUserProfile(response.data.data);
+  }
+
+  useEffect(() => {
+    fetchDataUser();
+    fetchProfile();
+  }, []);
+
   return (
     <div className="flex h-screen">
-      <div className="w-1/4 bg-gray-100 flex flex-col">
+      <div className="w-2/6 bg-gray-100 flex flex-col">
         <div className="flex items-center justify-between mb-3 bg-green-400 p-4">
           <div className="flex items-center">
-            <img
-              src="https://ava-grp-talk.zadn.vn/b/2/b/3/2/360/1b97b945c801fbea465549d6d4f6e8f6.jpg"
-              alt="Profile"
-              className="w-12 h-12 rounded-full mr-2"
-            />
-            <span className="text-sm font-bold text-white ml-1">Viet Anh</span>
+            {userProfile?.photos?.[0] && (
+              <img
+                src={userProfile.photos[0]}
+                alt="Profile"
+                className="w-12 h-12 rounded-full border-2 border-gray-500 mr-2"
+              />
+            )}
+            <span className="text-sm font-bold text-white ml-1">
+              {userProfile.fullName}
+            </span>
           </div>
           <div className="flex space-x-4">
-            <i className="fas fa-cog text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
+            <i
+              className="fas fa-cog text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+              onClick={() => {
+                navigate(`/membership`);
+              }}
+            ></i>
             <i className="fas fa-bell text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
-            <i className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
+            <i
+              className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+              onClick={() => {
+                dispatch(clear()), navigate("/home");
+              }}
+            ></i>
           </div>
         </div>
         <div className="flex justify-around">
@@ -147,45 +221,91 @@ function Matching() {
 
       <div className="w-3/4 flex justify-center items-center bg-gray-50">
         <div className="relative w-[380px] h-[620px]">
-          {profiles.map((profile, index) => (
+          {users.map((profile, index) => (
             <TinderCard
-              key={profile.name}
+              key={profile.id}
               onSwipe={(dir) => onSwipe(dir, profile.name)}
               className="absolute w-full h-full"
               ref={(el) => (cardRefs.current[index] = el)}
             >
               <div
+                key={profile.id}
                 className="bg-white rounded-lg shadow-lg w-full h-full overflow-hidden relative"
                 style={{
-                  backgroundImage: `url(${profile.images[0]})`,
+                  backgroundImage: `url(${profile.photos[0]})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
+                {/* Information Icon and Modal Trigger */}
+                <button
+                  key={profile.id}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-600 bg-white p-2 rounded-full shadow-lg"
+                  onClick={() => {
+                    openModal(profile.id);
+                  }}
+                >
+                  <IoFlag className="text-xl" />
+                </button>
                 {/* Name, age, and See Profile button */}
                 <div className="mt-[390px]">
-                  {" "}
-                  <div className="p-4 flex items-center bg-transparent bg-opacity-80">
-                    <h2 className="text-2xl font-bold text-white">
-                      {profile.name}, {profile.age}
-                    </h2>
-                    <button
-                      onClick={() => handleSeeProfile(profile)}
-                      className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
-                    >
-                      See Profile...
-                    </button>
-                  </div>
-                  {/* Tags */}
-                  <div className="flex flex-wrap overflow-hidden bg-transparent bg-opacity-80 p-2 rounded-lg">
-                    {profile.tags.slice(0, 5).map((tag, index) => (
-                      <span
-                        key={index}
-                        className="text-sm bg-gray-200 text-gray-600 rounded-full px-2 py-1 mr-2 mb-2 truncate max-w-[100px]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                  <div className="p-4 flex justify-between items-center bg-transparent bg-opacity-80">
+                    <div className="flex flex-col gap-2">
+                      {/* Profile Name and Age */}
+                      <div className="flex items-center gap-5">
+                        <h2 className="text-2xl font-bold text-white">
+                          {profile.fullName}, {profile.age}
+                        </h2>
+                        <button
+                          key={profile.id}
+                          onClick={() => getInforById(profile.id)}
+                          className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
+                        >
+                          See Profile...
+                        </button>
+                      </div>
+
+                      {/* Location and Icon */}
+                      <div className="flex items-center gap-2 text-white">
+                        <FaLocationDot className="text-xl text-white" />
+                        <span>{profile.location}</span>
+                      </div>
+                    </div>
+
+                    {isOpen && reportUserId === profile.id && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
+                          <h2 className="text-2xl font-semibold text-center text-red-500 mb-6">
+                            Report {profile.fullName}
+                          </h2>
+                          <input
+                            type="text"
+                            placeholder="Enter reason for reporting"
+                            value={reportReason}
+                            onChange={(e) => setReportReason(e.target.value)}
+                            className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                          />
+                          <div className="flex justify-between items-center">
+                            <button
+                              className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                              onClick={() => {
+                                reportUser(profile.id, reportReason); // Gọi hàm reportUser với lý do nhập
+                                setReportReason(""); // Reset lý do sau khi báo cáo
+                                closeModal(); // Đóng modal
+                              }}
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              onClick={closeModal}
+                              className="text-gray-500 hover:text-white hover:bg-black px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                            >
+                              CANCEL
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -214,7 +334,10 @@ function Matching() {
       </div>
 
       {selectedProfile && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div
+          key={selectedProfile.data.id}
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+        >
           <div className="bg-white rounded-lg shadow-lg p-8 w-[600px] relative">
             <button
               onClick={handleCloseModal}
@@ -222,47 +345,27 @@ function Matching() {
             >
               &times;
             </button>
+
             <h2 className="text-3xl font-bold mb-4 text-center text-green-600">
-              {selectedProfile.name}, {selectedProfile.age}
+              {selectedProfile.data.fullName}, {selectedProfile.data.age}
             </h2>
 
             <div className="flex flex-col gap-4 mb-4">
-              {/* Hàng đầu tiên với 3 ảnh */}
+              {/* First row of images */}
               <div className="flex justify-between">
-                {selectedProfile.images.slice(0, 3).map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Image ${index + 1}`}
-                    className="w-[170px] h-60 object-cover rounded-lg border border-gray-300 shadow-sm hover:shadow-lg transition duration-200"
-                    onClick={() => handleImageClick(image)}
-                  />
-                ))}
-              </div>
-              {/* Hàng thứ hai với 2 ảnh */}
-              <div className="flex justify-center gap-4">
-                {selectedProfile.images.slice(3, 5).map((image, index) => (
-                  <img
-                    key={index + 3} // Đảm bảo chỉ số duy nhất cho mỗi hình ảnh
-                    src={image}
-                    alt={`Image ${index + 4}`} // Chỉ số bắt đầu từ 4 cho hàng thứ hai
-                    className="w-[170px] h-60 object-cover rounded-lg border border-gray-300 shadow-sm hover:shadow-lg transition duration-200"
-                    onClick={() => handleImageClick(image)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="h-[100px]">
-              <div className="flex flex-wrap justify-center mb-4">
-                {selectedProfile.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="text-sm bg-green-200 text-green-800 rounded-full px-3 py-1 mr-2 mb-2 transition duration-200 transform hover:scale-105"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                {selectedProfile.data.photos?.length > 0 ? (
+                  selectedProfile.data.photos.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Image ${index + 1}`}
+                      className="w-[170px] h-60 object-cover rounded-lg border border-gray-300 shadow-sm hover:shadow-lg transition duration-200"
+                      onClick={() => handleImageClick(image)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-500">No photos available</p>
+                )}
               </div>
             </div>
           </div>

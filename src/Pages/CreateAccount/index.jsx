@@ -1,41 +1,88 @@
 import React, { useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import logo from "../../assets/logo/game.png";
+import api from "../../config/axios";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { IoLocationOutline } from "react-icons/io5";
+import { PlusOutlined } from "@ant-design/icons";
+import { Button, Image, Upload } from "antd";
+import "./index.scss";
+import uploadFile from "../../config/upload";
+// const getBase64 = (file) =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
 
 const CreateAccount = () => {
   // State để quản lý việc hiển thị form và lưu trữ thông tin
-  const [showRelationshipForm, setShowRelationshipForm] = useState(false);
-  const [relationshipIntent, setRelationshipIntent] = useState("");
-  const [relationshipTags, setRelationshipTags] = useState([
-    "Long-term partner",
-  ]); // danh sách các tag
+  const [gender, setGender] = useState("");
+  const [level, setLevel] = useState("");
+  const [times, setTimes] = useState([]);
+  const selectedEmail = useSelector((store) => store.userRegister.email);
+  const selectedPassword = useSelector((store) => store.userRegister.password);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
 
-  const [showInterestForm, setShowInterestForm] = useState(false);
-  const [inputInterest, setInputInterest] = useState("");
-  const [interestTags, setInterestTags] = useState([
-    "Harry Potter",
-    "Spotify",
-    "Movies",
-    "Tattoos",
-  ]); // các tag mặc định
+  const [userData, setUserData] = useState({
+    email: selectedEmail,
+    phone: "",
+    password: selectedPassword,
+    name: "",
+    dob: "",
+    gender: "",
+    occupation: "",
+    level: "",
+    description: "",
+    location: "",
+    availableTime: [],
+    photo: [],
+  });
+  const handleGenderSelection = (selectedGender) => {
+    setGender(selectedGender);
+    setUserData({ ...userData, gender: selectedGender }); // Update the gender state
+  };
+  const handleLevelSelection = (selectedLevel) => {
+    setLevel(selectedLevel);
+    setUserData({ ...userData, level: selectedLevel });
+  };
 
-  // Hàm xử lý khi submit Relationship Intent
-  const handleRelationshipSubmit = (e) => {
-    e.preventDefault();
-    if (relationshipIntent) {
-      setRelationshipTags([...relationshipTags, relationshipIntent]); // thêm tag mới vào danh sách
-      setShowRelationshipForm(false);
-      setRelationshipIntent("");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prevUserData) => ({ ...prevUserData, [name]: value }));
+  };
+  const handleTimeSelection = (time) => {
+    if (times.includes(time)) {
+      // If the time is already selected, remove it from the array
+      setTimes(times.filter((t) => t !== time));
+    } else {
+      // If the time is not selected, add it to the array
+      setTimes([...times, time]);
+      setUserData({ ...userData, availableTime: times });
     }
   };
 
-  // Hàm xử lý khi submit Interests
-  const handleInterestSubmit = (e) => {
+  const registerUser = async (e) => {
     e.preventDefault();
-    if (inputInterest) {
-      setInterestTags([...interestTags, inputInterest]);
-      setShowInterestForm(false);
-      setInputInterest("");
+    if (fileList.length < 2) {
+      toast.error("Please upload at least 2 photos.");
+      return;
+    }
+    try {
+      if (fileList.length > 0) {
+        const uploadedUrls = await Promise.all(
+          fileList.map((file) => uploadFile(file.originFileObj))
+        );
+        setUserData({ ...userData, photo: uploadedUrls });
+      }
+      const response = await api.post("/user/v1/register", userData);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -44,6 +91,63 @@ const CreateAccount = () => {
   const handleAgree = () => {
     setShowFormRule(false);
   };
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+  // const handleChange = ({ fileList: newFileList }) => {
+  //   setFileList(newFileList);
+  //   // setUserData({ ...userData, photo: fileList.map((file) => file.uid) });
+  //   const updatedPhotos = newFileList.map((file) => ({
+  //     url: file.url || file.preview, // Use the URL if available or the base64 data URL
+  //   }));
+  //   setUserData({ ...userData, photo: updatedPhotos });
+  // };
+  const handleChange = async ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    const updatedPhotos = newFileList
+      .map((file) => {
+        if (file.status === "done") {
+          return file.response?.url || file.url || file.preview;
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    setUserData((prevData) => ({
+      ...prevData,
+      photo: updatedPhotos,
+    }));
+  };
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: "none",
+      }}
+      type="button"
+    >
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  );
 
   return (
     <div className="relative z-50">
@@ -52,7 +156,10 @@ const CreateAccount = () => {
         <div className="fixed inset-0 bg-black opacity-30 z-40" />
       )}
       {!showFormRule && (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <form
+          className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
+          onSubmit={registerUser}
+        >
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-5xl md:w-2/3">
             <h1 className="text-2xl font-bold mb-6 text-center">
               Upload profile
@@ -70,6 +177,20 @@ const CreateAccount = () => {
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
                     placeholder="Input your first name..."
+                    name="name"
+                    value={userData.name}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold">Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    placeholder="Input your telephone number...."
+                    value={userData.phone}
+                    onChange={handleInputChange}
                   />
                 </div>
 
@@ -77,33 +198,63 @@ const CreateAccount = () => {
                   <label className="block text-gray-700 font-bold">Email</label>
                   <input
                     type="email"
+                    name="email"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
                     placeholder="Examle@gmail.com..."
+                    value={selectedEmail}
                   />
                 </div>
-
-                {/* Birthday */}
-                <div className="space-y-1">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Birthday
+                <div>
+                  <label className="block text-gray-700 font-bold">
+                    Occupation
                   </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-                      placeholder="Day"
-                    />
-                    <input
-                      type="text"
-                      className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-                      placeholder="Month"
-                    />
-                    <input
-                      type="text"
-                      className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
-                      placeholder="Year"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    name="occupation"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    placeholder="Input your occupation...."
+                    value={userData.occupation}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    placeholder="More about Yourself...."
+                    value={userData.description}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold">
+                    Date of Birth
+                  </label>
+                  <input
+                    type="text"
+                    name="dob"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    placeholder="YYYY-MM-DD"
+                    value={userData.dob}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    placeholder="Your Address"
+                    value={userData.location}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Gender */}
@@ -112,14 +263,27 @@ const CreateAccount = () => {
                     Gender
                   </label>
                   <div className="flex space-x-2">
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
+                    <button
+                      type="button"
+                      name="gender"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        gender === "Man" ? "border-green-400 bg-green-100" : ""
+                      }`}
+                      onClick={() => handleGenderSelection("Man")}
+                    >
                       Man
                     </button>
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
+                    <button
+                      type="button"
+                      name="gender"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        gender === "Woman"
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleGenderSelection("Woman")}
+                    >
                       Woman
-                    </button>
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
-                      More
                     </button>
                   </div>
                   <div className="mt-1">
@@ -137,170 +301,151 @@ const CreateAccount = () => {
 
                 <div className="space-y-1">
                   <label className="block text-gray-700 font-bold mb-2">
-                    Interested in
+                    Level
                   </label>
                   <div className="flex space-x-2">
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
-                      Man
+                    <button
+                      type="button"
+                      name="level"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        level === "BEGINNER"
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleLevelSelection("BEGINNER")}
+                    >
+                      BEGINNER
                     </button>
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
-                      Woman
+                    <button
+                      type="button"
+                      name="level"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        level === "CASUAL"
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleLevelSelection("CASUAL")}
+                    >
+                      CASUAL
                     </button>
-                    <button className="flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400">
-                      Everyone
+                    <button
+                      type="button"
+                      name="level"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        level === "PROFESSIONAL"
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleLevelSelection("PROFESSIONAL")}
+                    >
+                      PROFESSIONAL
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Available Time
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      name="availableTime"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        times.includes("MORNING")
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleTimeSelection("MORNING")}
+                    >
+                      MORNING
+                    </button>
+                    <button
+                      type="button"
+                      name="availableTime"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        times.includes("AFTERNOON")
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleTimeSelection("AFTERNOON")}
+                    >
+                      AFTERNOON
+                    </button>
+                    <button
+                      type="button"
+                      name="availableTime"
+                      className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
+                        times.includes("EVENING")
+                          ? "border-green-400 bg-green-100"
+                          : ""
+                      }`}
+                      onClick={() => handleTimeSelection("EVENING")}
+                    >
+                      EVENING
                     </button>
                   </div>
                 </div>
 
                 {/* Looking for */}
-                <div className="space-y-1">
-                  <label className="block text-gray-700 font-bold mb-2">
-                    Looking for
-                  </label>
-                  <div className="flex items-center justify-between space-x-2 ">
-                    <button
-                      className="py-2 px-4 border border-gray-300 rounded-full flex gap-2 items-center focus:outline-none hover:border-green-400 mb-2"
-                      onClick={() => setShowRelationshipForm(true)}
-                    >
-                      <FaPencil />
-                      Edit Relationship Intent
-                    </button>
-                    {/* Hiển thị danh sách Relationship Intent */}
-                  </div>
-
-                  {/* Form nhập Relationship Intent */}
-                  {showRelationshipForm && (
-                    <form onSubmit={handleRelationshipSubmit} className="mt-4">
-                      <input
-                        type="text"
-                        value={relationshipIntent}
-                        onChange={(e) => setRelationshipIntent(e.target.value)}
-                        className="py-2 px-4 border border-gray-300 rounded-full focus:outline-none w-full"
-                        placeholder="Enter relationship intent"
-                      />
-                      <button
-                        type="submit"
-                        className="py-2 px-4 mt-2 bg-black text-white rounded-full"
-                      >
-                        Submit
-                      </button>
-                    </form>
-                  )}
-
-                  {/* Hiển thị danh sách Relationship Intent */}
-                  <div className="mt-2">
-                    {relationshipTags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="text-green-400 text-sm border border-green-400 px-3 py-1 rounded-full mr-2"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Right side: Profile Photos */}
-              <div className="w-full max-w-md md:w-1/3 md:ml-8 mt-4 md:mt-0">
+              <div className="w-full max-w-md md:w-2/4 md:ml-8 mt-4 md:mt-0">
                 <label className="block text-gray-700 mb-2 font-bold">
                   Profile photos
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="w-full h-24 bg-gray-100 border border-gray-300 flex items-center justify-center">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="profile pic"
+
+                {/* Grid for displaying uploaded images */}
+                <div className="upload-grid">
+                  <Upload
+                    name="photo"
+                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                    listType="picture-card"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    onChange={handleChange}
+                    // Control to limit max images to 6
+                    beforeUpload={(file) => {
+                      if (fileList.length >= 6) {
+                        return Upload.LIST_IGNORE; // Prevents more than 6 uploads
+                      }
+                      return true;
+                    }}
+                  >
+                    {/* Hide upload button when 6 images are uploaded */}
+                    {fileList.length < 6 && uploadButton}
+                  </Upload>
+
+                  {/* Preview image modal */}
+                  {previewImage && (
+                    <Image
+                      wrapperStyle={{
+                        display: "none",
+                      }}
+                      preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) =>
+                          !visible && setPreviewImage(""),
+                      }}
+                      src={previewImage}
                     />
-                  </div>
-                  <div className="w-full h-24 bg-gray-100 border border-gray-300 flex items-center justify-center">
-                    <img
-                      src="https://via.placeholder.com/50"
-                      alt="profile pic"
-                    />
-                  </div>
-                  <div className="w-full h-24 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center">
-                    <span className="text-gray-400 text-3xl">+</span>
-                  </div>
-                  <div className="w-full h-24 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center">
-                    <span className="text-gray-400 text-3xl">+</span>
-                  </div>
-                  <div className="w-full h-24 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center">
-                    <span className="text-gray-400 text-3xl">+</span>
-                  </div>
+                  )}
                 </div>
+
                 <p className="text-gray-500 text-sm mt-2">
                   Upload 2 photos to start. Add 4 or more to make your profile
                   stand out.
                 </p>
+
+                {/* Display an error message if less than 2 images are uploaded */}
+                {fileList.length < 2 && (
+                  <p className="text-red-500 text-sm mt-2">
+                    Please upload at least 2 images.
+                  </p>
+                )}
               </div>
-            </div>
-
-            {/* Optional Section with Lines */}
-            <div className="flex items-center justify-center my-8">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="mx-4 text-lg font-bold text-gray-700">
-                Optional
-              </span>
-              <div className="flex-grow border-t border-gray-300"></div>
-            </div>
-
-            {/* Interests */}
-            <div className="space-y-1">
-              <label className="block text-gray-700 font-bold mb-2">
-                Interests
-              </label>
-              <div className="flex items-center justify-between space-x-2">
-                <button
-                  className="py-2 px-4 border border-gray-300 rounded-full flex gap-2 items-center focus:outline-none hover:border-green-400
-            mb-2"
-                  onClick={() => setShowInterestForm(true)}
-                >
-                  <FaPencil />
-                  Edit Interests
-                </button>
-              </div>
-
-              {/* Form nhập Interests */}
-              {showInterestForm && (
-                <form onSubmit={handleInterestSubmit} className="mt-4">
-                  <input
-                    type="text"
-                    value={inputInterest}
-                    onChange={(e) => setInputInterest(e.target.value)}
-                    className="py-2 px-4 border border-gray-300 rounded-full focus:outline-none w-full"
-                    placeholder="Enter interest"
-                  />
-                  <button
-                    type="submit"
-                    className="py-2 px-4 mt-2 bg-black text-white rounded-full"
-                  >
-                    Submit
-                  </button>
-                </form>
-              )}
-
-              {/* Hiển thị danh sách Interests */}
-              <div className="mt-2">
-                {interestTags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="text-green-400 text-sm border border-green-400 px-3 py-1 rounded-full mr-2"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Sexual Orientation */}
-            <div className="space-y-1 mt-4">
-              <label className="block text-gray-700 font-bold mb-2">
-                Sexual Orientation
-              </label>
-              <button className="py-2 px-4 border border-gray-300 rounded-full focus:outline-none hover:border-green-400">
-                + Add Sexual Orientation
-              </button>
             </div>
 
             {/* Continue Button */}
@@ -314,7 +459,7 @@ const CreateAccount = () => {
               Already have an account? Log in.
             </p>
           </div>
-        </div>
+        </form>
       )}
     </div>
   );

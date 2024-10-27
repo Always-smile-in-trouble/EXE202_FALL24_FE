@@ -30,14 +30,14 @@ const AboutUs = () => {
                     loading="lazy"
                   />
                   <p className="text-green-700 font-second_font">
-                    ShuttleSmash
+                    ShuttleMatch
                   </p>
                 </div>
                 <Reavel>
                   <p className="dark:text-white text-slate-700 font-bold text-xl mb-1">
                     Welcome to{" "}
                     <span className="font-bold">
-                      The Shuttle Smash Matching Teamates!
+                      The "Shuttle Match" Matching Teamates!
                     </span>
                   </p>
                 </Reavel>

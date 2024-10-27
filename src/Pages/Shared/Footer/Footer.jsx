@@ -26,7 +26,7 @@ const Footer = () => {
               src={game}
               alt="ShuttleSmash Logo"
             />
-            <p className="text-green-600 font-second_font">ShuttleSmash</p>
+            <p className="text-green-600 font-second_font">ShuttleMatch</p>
             <p className="text-sm font-semibold text-slate-300 dark:text-white">
               Let's Connect Together
             </p>
