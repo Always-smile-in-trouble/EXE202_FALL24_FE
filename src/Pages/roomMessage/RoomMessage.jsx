@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "./RoomMessage.scss";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/features/counterSlice";
 import { useStateValue } from "../../Context/StateProvider";
+import api from "../../config/axios";
 function RoomMessage({
   room,
   active,
@@ -16,7 +16,12 @@ function RoomMessage({
   const { setIdRoomChat, setShowSearchFriends, setShowChatList } =
     useStateValue();
   const navigate = useNavigate();
-  const user = useSelector(selectUser);
+  const [user, setUser] = useState("");
+
+  async function fetchUser() {
+    const response = await api.get("/user/v1/getUserInfo");
+    setUser(response.data.data);
+  }
 
   const setShow = () => {
     setIdRoomChat(room);

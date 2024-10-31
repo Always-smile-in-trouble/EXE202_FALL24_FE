@@ -1,15 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import api from "../../config/axios";
 
 function PaymentStatus() {
   const query = new URLSearchParams(useLocation().search);
   const status = query.get("status");
-  const cancel = query.get("cancel");
   const orderCode = query.get("orderCode");
+  const [userId, setUserId] = useState("");
+  const paymentId = useSelector((store) => store.payment.paymentId);
   const navigate = useNavigate();
 
   const isPaymentSuccess = status === "PAID";
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/user/v1/getUserInfo");
+        setUserId(response.data.data.id);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const updateTransactionAndSubscription = async () => {
+      if (isPaymentSuccess && paymentId && userId) {
+        try {
+          await api.put("/user-subscription/v1/updateUserSubscription", {
+            userId,
+            transactionId: paymentId,
+          });
+          console.log("Transaction and subscription updated successfully");
+        } catch (error) {
+          console.error("Error updating transaction or subscription:", error);
+        }
+      }
+    };
+
+    updateTransactionAndSubscription();
+  }, [isPaymentSuccess, paymentId, userId]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">

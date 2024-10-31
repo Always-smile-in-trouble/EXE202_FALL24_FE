@@ -9,6 +9,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button, Image, Upload } from "antd";
 import "./index.scss";
 import uploadFile from "../../config/upload";
+import { useNavigate } from "react-router-dom";
 // const getBase64 = (file) =>
 //   new Promise((resolve, reject) => {
 //     const reader = new FileReader();
@@ -27,6 +28,7 @@ const CreateAccount = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
     email: selectedEmail,
@@ -106,14 +108,7 @@ const CreateAccount = () => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-  // const handleChange = ({ fileList: newFileList }) => {
-  //   setFileList(newFileList);
-  //   // setUserData({ ...userData, photo: fileList.map((file) => file.uid) });
-  //   const updatedPhotos = newFileList.map((file) => ({
-  //     url: file.url || file.preview, // Use the URL if available or the base64 data URL
-  //   }));
-  //   setUserData({ ...userData, photo: updatedPhotos });
-  // };
+
   const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
     const updatedPhotos = newFileList
@@ -158,7 +153,10 @@ const CreateAccount = () => {
       {!showFormRule && (
         <form
           className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
-          onSubmit={registerUser}
+          onSubmit={() => {
+            registerUser();
+            navigate("/login");
+          }}
         >
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-5xl md:w-2/3">
             <h1 className="text-2xl font-bold mb-6 text-center">

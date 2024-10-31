@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import Message from "../message/Message";
 import { IoSend } from "react-icons/io5";
 import { Input } from "antd";
 import "./RoomChatDetail.scss";
 import { BsImageFill } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import { useOutletContext, useParams } from "react-router-dom";
-import api from "../../config/axios";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/features/counterSlice";
 import { useStateValue } from "../../Context/StateProvider";
+import useRealtime from "../../Hooks/useRealTime";
+import api from "../../config/axios";
+import Message from "../message/Message";
 const { TextArea } = Input;
 
 function RoomChatDetail() {
@@ -17,9 +17,9 @@ function RoomChatDetail() {
   const messagesContainerRef = useRef();
   const [data, setData] = useState([]);
   const [message, setMessage] = useState("");
-  const user = useSelector(selectUser);
   const params = useParams();
   const idRef = useRef(params.id);
+  const [user, setUser] = useState("");
   const [typing, setTyping] = useState("");
 
   const fetch = async () => {
@@ -47,11 +47,20 @@ function RoomChatDetail() {
     }
   });
 
+  async function fetchUser() {
+    const response = await api.get("/user/v1/getUserInfo");
+    setUser(response.data.data);
+  }
+
   function handleKeyDown(event) {
     if (event.key === "Enter") {
       sendMessage();
     }
   }
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     console.log(params.id);

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "https://shuttle-match-be.onrender.com/api";
+const baseUrl = "https://shuttlematch.io.vn/api";
 // const baseUrl = "https://phongvibanhxua-be-apis.onrender.com";
 const config = {
   baseUrl,

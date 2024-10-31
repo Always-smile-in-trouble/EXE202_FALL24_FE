@@ -6,7 +6,7 @@ function useRealtime(callback) {
   const WS_URL = "https://shuttle-match-be.onrender.com/api";
   const socket = new SockJS(WS_URL);
   const stomp = Stomp.over(socket);
-  const accountID = localStorage.getItem("accountId");
+  const accountID = localStorage.getItem("userId");
   useEffect(() => {
     const onConnected = () => {
       console.log("WebSocket connected");

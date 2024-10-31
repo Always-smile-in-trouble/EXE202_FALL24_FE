@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./RoomChat.scss";
 import { useMediaQuery } from "react-responsive";
 import { Outlet, useParams } from "react-router-dom";
-import { useStateValue } from "../../Context/StateProvider";
 import ChatList from "../ChatList";
 import FormSearchFriends from "../formSearchFriends/FormSearchFriends";
+import { useStateValue } from "../../Context/StateProvider";
 
 function RoomChat() {
   const { theme, showSearchFriends, showChatList } = useStateValue();

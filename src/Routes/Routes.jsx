@@ -9,6 +9,8 @@ import NavbarInside from "../Pages/Shared/Navbar/Navbar2";
 import Matching from "../Pages/Matching";
 import MemberShip from "../Pages/MemberShip";
 import PaymentStatus from "../Pages/PaymentReturn";
+import UserProfile from "../Pages/profile";
+import TransactionHistory from "../Pages/Transactions";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +28,16 @@ const router = createBrowserRouter([
       },
     ],
   },
+  // {
+  //   path: "/room-messages",
+  //   element: <RoomChat />,
+  //   children: [
+  //     {
+  //       path: ":id",
+  //       element: <ChatDetail />,
+  //     },
+  //   ],
+  // },
   {
     path: "/login",
     element: <LoginAndRegister />,
@@ -37,6 +49,14 @@ const router = createBrowserRouter([
   {
     path: "/createaccount",
     element: <CreateAccount />,
+  },
+  {
+    path: "/profile",
+    element: <UserProfile />,
+  },
+  {
+    path: "/history",
+    element: <TransactionHistory />,
   },
   {
     path: "/navbar2",

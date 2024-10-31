@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import "./membership.scss";
 import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { payment } from "../../redux/features/billPayment";
 
 function MemberShip() {
   const [memberships, setMemberships] = useState([]);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   async function paymentPayOS(subscriptionId) {
@@ -12,7 +15,9 @@ function MemberShip() {
       subscriptionId,
       redirectUrl: "http://localhost:5173/paymentReturn",
     });
+    console.log(res.data.data.paymentId);
     console.log(res.data.data.paymentUrl);
+    dispatch(payment(res.data.data));
     window.location.href = res.data.data.paymentUrl;
   }
 

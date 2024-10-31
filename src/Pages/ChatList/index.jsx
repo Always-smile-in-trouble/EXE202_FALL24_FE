@@ -3,7 +3,6 @@ import "./ChatList.scss";
 import RoomMessage from "../roomMessage/RoomMessage";
 import api from "../../config/axios";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/features/counterSlice";
 import { useParams } from "react-router-dom";
 import { useStateValue } from "../../Context/StateProvider";
 import useRealtime from "../../Hooks/useRealTime";
@@ -14,7 +13,7 @@ function ChatList({ setFetchRoom }) {
   const [data, setData] = useState([]);
   const [isSet, setIsSet] = useState(false);
   // const [user, setUser] = useState([]);
-  const user = useSelector(selectUser);
+  const [user, setUser] = useState("");
   const { id } = useParams();
 
   useRealtime(async (body) => {
@@ -26,12 +25,16 @@ function ChatList({ setFetchRoom }) {
     try {
       const res = await api.get("/chat");
       console.log(res.data);
-      // console.log(res.data.users);
       setData(res.data);
     } catch (err) {
       console.log(err);
     }
   };
+
+  async function fetchUser() {
+    const response = await api.get("/user/v1/getUserInfo");
+    setUser(response.data.data);
+  }
 
   useEffect(() => {
     fetch();
@@ -39,6 +42,7 @@ function ChatList({ setFetchRoom }) {
 
   useEffect(() => {
     fetch();
+    fetchUser;
   }, []);
 
   return (

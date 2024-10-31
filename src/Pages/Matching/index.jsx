@@ -88,21 +88,21 @@ function Matching() {
     setIsOpen(false);
   };
 
-  const onSwipe = (direction, name) => {
-    console.log("You swiped: " + direction + " on " + name);
+  const onSwipe = (direction, profileName, profileId) => {
+    if (direction === "right") {
+      swipeUser(profileId, "LIKE"); // Like swipe
+    } else if (direction === "left") {
+      swipeUser(profileId, "PASS"); // Pass swipe
+    }
   };
-
-  // const handleSeeProfile = (profile) => {
-  //   getInforById(profile.id);
-  // };
 
   const handleCloseModal = () => {
     setSelectedProfile(null);
-    setSelectedImage(null); // Reset ảnh đã chọn khi đóng modal
+    setSelectedImage(null);
   };
 
   const handleImageClick = (image) => {
-    setSelectedImage(image); // Cập nhật ảnh đã chọn
+    setSelectedImage(image);
   };
 
   const swipeLeft = (index) => {
@@ -112,6 +112,10 @@ function Matching() {
   const swipeRight = (index) => {
     cardRefs.current[index].swipe("right");
   };
+
+  async function swipeUser(toUserId, swipeType) {
+    await api.post("/swipe/v1/swipe", { toUserId, swipeType });
+  }
 
   async function reportUser(toUserId, reason) {
     const response = await api.post("/report/v1/report", {
@@ -165,20 +169,34 @@ function Matching() {
               {userProfile.fullName}
             </span>
           </div>
-          <div className="flex space-x-4">
-            <i
-              className="fas fa-cog text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
-              onClick={() => {
-                navigate(`/membership`);
-              }}
-            ></i>
-            <i className="fas fa-bell text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"></i>
-            <i
-              className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
-              onClick={() => {
-                dispatch(clear()), navigate("/home");
-              }}
-            ></i>
+          <div className="flex space-x-6 items-center">
+            <div className="flex flex-col justify-center items-center">
+              <i
+                className="fas fa-solid fa-bag-shopping text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+                onClick={() => {
+                  navigate(`/membership`);
+                }}
+              ></i>
+              <p className="text-xs">Buy Now</p>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <i
+                className="fas fa-solid fa-user text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+                onClick={() => {
+                  navigate(`/profile`);
+                }}
+              ></i>
+              <p className="text-xs">Profile</p>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <i
+                className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+                onClick={() => {
+                  dispatch(clear()), navigate("/home");
+                }}
+              ></i>
+              <p className="text-xs">SignOut</p>
+            </div>
           </div>
         </div>
         <div className="flex justify-around">
@@ -224,12 +242,11 @@ function Matching() {
           {users.map((profile, index) => (
             <TinderCard
               key={profile.id}
-              onSwipe={(dir) => onSwipe(dir, profile.name)}
+              onSwipe={(dir) => onSwipe(dir, profile.fullName, profile.id)}
               className="absolute w-full h-full"
               ref={(el) => (cardRefs.current[index] = el)}
             >
               <div
-                key={profile.id}
                 className="bg-white rounded-lg shadow-lg w-full h-full overflow-hidden relative"
                 style={{
                   backgroundImage: `url(${profile.photos[0]})`,
@@ -239,25 +256,21 @@ function Matching() {
               >
                 {/* Information Icon and Modal Trigger */}
                 <button
-                  key={profile.id}
                   className="absolute top-2 right-2 text-red-500 hover:text-red-600 bg-white p-2 rounded-full shadow-lg"
-                  onClick={() => {
-                    openModal(profile.id);
-                  }}
+                  onClick={() => openModal(profile.id)}
                 >
                   <IoFlag className="text-xl" />
                 </button>
-                {/* Name, age, and See Profile button */}
+
+                {/* Name, Age, and See Profile Button */}
                 <div className="mt-[390px]">
                   <div className="p-4 flex justify-between items-center bg-transparent bg-opacity-80">
                     <div className="flex flex-col gap-2">
-                      {/* Profile Name and Age */}
                       <div className="flex items-center gap-5">
                         <h2 className="text-2xl font-bold text-white">
                           {profile.fullName}, {profile.age}
                         </h2>
                         <button
-                          key={profile.id}
                           onClick={() => getInforById(profile.id)}
                           className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
                         >
@@ -265,13 +278,13 @@ function Matching() {
                         </button>
                       </div>
 
-                      {/* Location and Icon */}
                       <div className="flex items-center gap-2 text-white">
                         <FaLocationDot className="text-xl text-white" />
                         <span>{profile.location}</span>
                       </div>
                     </div>
 
+                    {/* Report Modal */}
                     {isOpen && reportUserId === profile.id && (
                       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
@@ -289,9 +302,9 @@ function Matching() {
                             <button
                               className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
                               onClick={() => {
-                                reportUser(profile.id, reportReason); // Gọi hàm reportUser với lý do nhập
-                                setReportReason(""); // Reset lý do sau khi báo cáo
-                                closeModal(); // Đóng modal
+                                reportUser(profile.id, reportReason);
+                                setReportReason("");
+                                closeModal();
                               }}
                             >
                               Confirm
