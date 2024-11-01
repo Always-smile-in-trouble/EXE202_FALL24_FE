@@ -11,10 +11,16 @@ function MemberShip() {
   const navigate = useNavigate();
 
   async function paymentPayOS(subscriptionId) {
+    const redirectUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://shuttle-smash.vercel.app/paymentReturn"
+        : "http://localhost:5173/paymentReturn";
+
     const res = await api.post("/payos/v1/subscriptionPayment", {
       subscriptionId,
-      redirectUrl: "http://localhost:5173/paymentReturn",
+      redirectUrl,
     });
+
     console.log(res.data.data.paymentId);
     console.log(res.data.data.paymentUrl);
     dispatch(payment(res.data.data));
@@ -66,12 +72,16 @@ function MemberShip() {
                     ? "Gói miễn phí cho người mới."
                     : membership.name === "DIAMOND"
                     ? "Gói cao cấp với nhiều ưu đãi."
-                    : "Gói cho người dùng ngắn hạn."}
+                    : "Gói mua thêm lượt thích."}
                 </p>
                 <div className="features">
                   <h4>
                     <span className="feature">Giá</span>:{" "}
-                    <span className="value">${membership.price}</span>
+                    <span className="value">
+                      {membership.price === 0
+                        ? "MIỄN PHÍ"
+                        : `${membership.price.toLocaleString("vi-VN")} VND`}
+                    </span>
                   </h4>
                   <h4>
                     <span className="feature">Thời gian</span>:{" "}
@@ -80,24 +90,42 @@ function MemberShip() {
                     </span>
                   </h4>
                   <h4>
-                    <span className="feature">Số lượt thích mỗi ngày</span>:{" "}
-                    <span className="value">{membership.likesPerDay}</span>
+                    <span className="feature">
+                      {membership.name === "IN_DAY"
+                        ? "Số lượt thích cộng thêm"
+                        : "Số lượt thích mỗi ngày"}
+                    </span>
+                    : <span className="value">{membership.likesPerDay}</span>
                   </h4>
                 </div>
                 <div className="price">
                   <h4>
-                    ${membership.price === 0 ? "MIỄN PHÍ" : membership.price}
+                    {membership.price === 0
+                      ? "MIỄN PHÍ"
+                      : `${membership.price.toLocaleString("vi-VN")} VND`}
                   </h4>
                 </div>
-                <button
-                  className="btn btn-block btn-outline-primary"
-                  type="submit"
-                  onClick={() => {
-                    paymentPayOS(membership.id);
-                  }}
-                >
-                  BUY NOW
-                </button>
+                {membership.name === "FREE" ? (
+                  <div className="owned-message">
+                    <button
+                      className="btn btn-block btn-outline-primary"
+                      type="button"
+                      disabled
+                    >
+                      Owned
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="btn btn-block btn-outline-primary"
+                    type="submit"
+                    onClick={() => {
+                      paymentPayOS(membership.id);
+                    }}
+                  >
+                    BUY NOW
+                  </button>
+                )}
               </div>
             </div>
           ))}

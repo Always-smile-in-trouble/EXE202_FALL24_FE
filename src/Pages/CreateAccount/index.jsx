@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import logo from "../../assets/logo/game.png";
 import api from "../../config/axios";
@@ -141,6 +141,13 @@ const CreateAccount = () => {
       </div>
     </button>
   );
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/matching"); // Nếu có token, điều hướng đến trang matching
+    }
+  }, [navigate]);
 
   return (
     <div className="relative z-50">

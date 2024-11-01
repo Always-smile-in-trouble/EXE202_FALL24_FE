@@ -11,6 +11,7 @@ import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineLocationOn } from "react-icons/md";
 import logo from "../../assets/logo/badminton.png";
+import badmintonImage from "../../assets/logo/badminton1.png";
 
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
@@ -25,8 +26,8 @@ function Matching() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [reportUserId, setReportUserId] = useState(null);
-  const [reportReason, setReportReason] = useState("");
-
+  const [reportReasons, setReportReasons] = useState([]); // State để lưu danh sách lý do
+  const [selectedReason, setSelectedReason] = useState("");
   const [showProfiles, setShowProfiles] = useState(false);
 
   const handleShowProfiles = () => {
@@ -83,6 +84,8 @@ function Matching() {
       toUserId,
       reason,
     });
+    closeModal();
+    setSelectedReason("");
   }
 
   async function getInforById(id) {
@@ -109,15 +112,22 @@ function Matching() {
     setUserProfile(response.data.data);
   }
 
+  async function fetchReasons() {
+    const response = await api.get("/report/v1/listReason");
+    setReportReasons(response.data);
+    console.log(response.data);
+  }
+
   useEffect(() => {
     fetchDataUser();
     fetchProfile();
     fetchUserLiked();
+    fetchReasons();
   }, []);
 
   const UserProfile = ({ user }) => {
     return (
-      <div className="mt-8 border-2 border-gray-300 rounded-lg p-4">
+      <div className="mt-2 border-2 border-gray-300 rounded-lg p-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center mb-2">
             {user.photos?.[0] && (
@@ -163,8 +173,87 @@ function Matching() {
       </div>
     );
   };
+  const mockChats = [
+    {
+      id: 1,
+      sender: "Khải",
+      lastMessage: "Hello! How are you?",
+      photo:
+        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/3528382f6a66d2388b774.jpg?alt=media&token=17a36a25-e809-4075-94fa-c7e60b67d9c2",
+      messages: [
+        { sender: "User1", message: "Hello! How are you?" },
+        { sender: "You", message: "I am good, thanks!" },
+      ],
+    },
+    {
+      id: 2,
+      sender: "Linh",
+      lastMessage: "Are you coming to the game?",
+      photo:
+        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/a17ce0c7c88f70d1299e11.jpg?alt=media&token=1cfde36f-dc61-43e5-8d2a-beeab89abb43",
+      messages: [
+        { sender: "User2", message: "Are you coming to the game?" },
+        { sender: "You", message: "Yes, I will be there!" },
+      ],
+    },
+    {
+      id: 3,
+      sender: "Tiến",
+      lastMessage: "Let’s meet up!",
+      photo:
+        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/_MG_8550-2.jpg?alt=media&token=d7577b2c-ad4c-4b3f-83e4-fa7edb6136f1",
+      messages: [
+        { sender: "User3", message: "Let’s meet up!" },
+        { sender: "You", message: "Sure, when?" },
+      ],
+    },
+  ];
+
+  const ChatBox = ({ chat, onClick }) => {
+    return (
+      <div
+        className="border-b border-gray-300 p-4 cursor-pointer hover:bg-green-100 transition duration-200 flex items-center rounded-lg shadow-sm"
+        onClick={onClick}
+      >
+        {chat.photo && (
+          <img
+            src={chat.photo}
+            alt={chat.sender}
+            className="w-16 h-16 rounded-full border-2 border-green-500 mr-4 object-cover"
+          />
+        )}
+        <div className="flex flex-col">
+          <span className="font-semibold text-gray-800">{chat.sender}</span>
+          <span className="text-gray-500 text-sm truncate">
+            {chat.lastMessage}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === "") return;
+
+    // Cập nhật cuộc trò chuyện với tin nhắn mới
+    const updatedMessages = [
+      ...selectedChat.messages,
+      { sender: "You", message: newMessage },
+    ];
+    setSelectedChat({ ...selectedChat, messages: updatedMessages });
+    setNewMessage("");
+
+    // Cập nhật vào mockChats (cập nhật thực tế nếu lưu trong state)
+    mockChats.forEach((chat) => {
+      if (chat.id === selectedChat.id) {
+        chat.messages = updatedMessages;
+      }
+    });
+  };
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
         <div className="flex items-center justify-between mb-3 bg-green-400 p-4">
           <div className="flex items-center">
@@ -172,7 +261,7 @@ function Matching() {
               <img
                 src={userProfile.photos[0]}
                 alt="Profile"
-                className="w-12 h-12 rounded-full border-2 border-gray-500 mr-2"
+                className="w-12 h-12 rounded-full border-2 border-gray-500 mr-2 object-cover"
               />
             )}
             <span className="text-sm font-bold text-white ml-1">
@@ -251,18 +340,99 @@ function Matching() {
                   </div>
                 </div>
               </div>
-              {showProfiles && (
-                <div className="mt-4">
-                  {matchesData.map((user) => (
-                    <UserProfile key={user.id} user={user} />
-                  ))}
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  showProfiles ? "max-h-[500px]" : "max-h-0"
+                }`}
+              >
+                <div className="overflow-y-auto mx-auto p-2 border rounded-lg shadow-lg">
+                  {matchesData.length > 0 ? (
+                    matchesData.map((user) => (
+                      <UserProfile key={user.id} user={user} />
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-[400px]">
+                      <div className="animate-bounce mb-4">
+                        <img
+                          src={badmintonImage}
+                          alt="No Matches"
+                          className="w-32 h-32 mb-4"
+                        />
+                      </div>
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        No Matches Found
+                      </h2>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           ) : (
-            <div className="text-center text-gray-600">
-              <h2 className="text-xl font-bold mb-4">Your Messages</h2>
-              <p>Your conversations will appear here.</p>
+            <div className="p-4 space-y-4">
+              {/* Danh sách hộp chat hoặc lịch sử tin nhắn */}
+              {!selectedChat ? (
+                <div className="grid gap-2">
+                  {mockChats.map((chat) => (
+                    <ChatBox
+                      key={chat.id}
+                      chat={chat}
+                      onClick={() => setSelectedChat(chat)}
+                      className="hover:bg-green-100 transition duration-200 rounded-lg p-2 shadow-md cursor-pointer"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-gray-700">
+                      {selectedChat.sender}'s Messages
+                    </h3>
+                    <button
+                      className="text-sm text-blue-500 hover:text-blue-700 transition"
+                      onClick={() => setSelectedChat(null)}
+                    >
+                      Back to Chats
+                    </button>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2">
+                    {selectedChat.messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`flex ${
+                          msg.sender === "You" ? "justify-end" : "justify-start"
+                        }`}
+                      >
+                        <span
+                          className={`inline-block px-4 py-2 rounded-lg text-sm shadow-sm ${
+                            msg.sender === "You"
+                              ? "bg-green-300 text-white"
+                              : "bg-gray-300 text-gray-800"
+                          }`}
+                        >
+                          {msg.sender === "You" ? "You" : msg.sender}:{" "}
+                          {msg.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Ô nhập tin nhắn mới */}
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      className="border border-gray-300 rounded-full p-2 flex-grow shadow-sm focus:outline-none focus:ring focus:ring-green-200"
+                      placeholder="Type your message..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                    />
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition"
+                      onClick={handleSendMessage}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -274,6 +444,9 @@ function Matching() {
             <TinderCard
               key={profile.id}
               onSwipe={(dir) => onSwipe(dir, profile.fullName, profile.id)}
+              onCardLeftScreen={() => {
+                cardRefs.current[index].restoreCard();
+              }}
               className="absolute w-full h-full"
               ref={(el) => (cardRefs.current[index] = el)}
             >
@@ -298,7 +471,7 @@ function Matching() {
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-5">
                         <h2 className="text-2xl font-bold text-white">
-                          {profile.fullName}, {profile.age}
+                          {profile.fullName.split(" ")[0]}, {profile.age}
                         </h2>
                         <button
                           onClick={() => getInforById(profile.id)}
@@ -320,21 +493,26 @@ function Matching() {
                           <h2 className="text-2xl font-semibold text-center text-red-500 mb-6">
                             Report {profile.fullName}
                           </h2>
-                          <input
-                            type="text"
-                            placeholder="Enter reason for reporting"
-                            value={reportReason}
-                            onChange={(e) => setReportReason(e.target.value)}
+                          <select
+                            value={selectedReason}
+                            onChange={(e) => setSelectedReason(e.target.value)}
                             className="border border-gray-300 rounded-lg p-2 w-full mb-4"
-                          />
+                          >
+                            <option value="" disabled>
+                              Select a reason
+                            </option>
+                            {reportReasons.map((reason) => (
+                              <option key={reason.name} value={reason.name}>
+                                {reason.reason}
+                              </option>
+                            ))}
+                          </select>
                           <div className="flex justify-between items-center">
                             <button
                               className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
-                              onClick={() => {
-                                reportUser(profile.id, reportReason);
-                                setReportReason("");
-                                closeModal();
-                              }}
+                              onClick={() =>
+                                reportUser(profile.id, selectedReason)
+                              } // Bọc hàm trong arrow function
                             >
                               Confirm
                             </button>
@@ -377,9 +555,9 @@ function Matching() {
       {selectedProfile && (
         <div
           key={selectedProfile.data.id}
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 ease-in-out opacity-100"
         >
-          <div className="bg-white rounded-lg shadow-lg p-8 w-[600px] relative">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] relative transform transition-transform duration-300 ease-in-out scale-100 hover:scale-105">
             <button
               onClick={handleCloseModal}
               className="absolute top-2 right-2 text-gray-600 hover:text-red-500 transition duration-200 text-2xl"
@@ -391,26 +569,68 @@ function Matching() {
               {selectedProfile.data.fullName}, {selectedProfile.data.age}
             </h2>
 
-            <div className="flex flex-col gap-4 mb-4">
-              <div className="flex justify-between">
-                {selectedProfile.data.photos?.length > 0 ? (
-                  selectedProfile.data.photos.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Image ${index + 1}`}
-                      className="w-[170px] h-60 object-cover rounded-lg border border-gray-300 shadow-sm hover:shadow-lg transition duration-200"
-                      onClick={() => handleImageClick(image)}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-500">No photos available</p>
-                )}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="flex flex-col">
+                <div className="mb-2">
+                  <strong className="text-gray-700">Occupation:</strong>{" "}
+                  {selectedProfile.data.occupation}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Gender:</strong>{" "}
+                  {selectedProfile.data.gender}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Level:</strong>{" "}
+                  {selectedProfile.data.level}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Available Time:</strong>{" "}
+                  {selectedProfile.data.availableTime.join(", ")}
+                </div>
               </div>
+              <div className="flex flex-col">
+                <div className="mb-2">
+                  <strong className="text-gray-700">Date of Birth:</strong>{" "}
+                  {selectedProfile.data.dob.join("-")}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Description:</strong>{" "}
+                  {selectedProfile.data.description}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Location:</strong>{" "}
+                  {selectedProfile.data.location}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {Array.from({ length: 6 }, (_, index) =>
+                selectedProfile.data.photos &&
+                selectedProfile.data.photos[index] ? (
+                  <img
+                    key={index}
+                    src={selectedProfile.data.photos[index]}
+                    alt={`Image ${index + 1}`}
+                    className="w-full h-40 object-cover rounded-lg border border-gray-300 shadow-sm hover:shadow-lg transition duration-200 transform hover:scale-110"
+                    onClick={() =>
+                      handleImageClick(selectedProfile.data.photos[index])
+                    }
+                  />
+                ) : (
+                  <div
+                    key={index}
+                    className="w-full h-40 border border-gray-300 rounded-lg flex items-center justify-center bg-gray-100"
+                  >
+                    <span className="text-gray-400">No Image</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
       )}
+
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
           <div className="relative">
