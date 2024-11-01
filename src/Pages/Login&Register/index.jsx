@@ -4,7 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import api from "../../config/axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
 import { login, userLoginSlice } from "../../redux/features/userLoginSlice";
@@ -15,6 +15,7 @@ const Index = () => {
   const [emailLogin, setEmailLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -59,7 +60,7 @@ const Index = () => {
       dispatch(login(res.data.data));
       navigate("/matching");
     } catch (e) {
-      toast.error(e.response.message);
+      toast.error(e.response.data.message);
     }
   };
 

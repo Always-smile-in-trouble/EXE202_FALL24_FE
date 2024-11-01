@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
-import { IoMdInformationCircle } from "react-icons/io";
-import { IoFlag, IoShieldSharp } from "react-icons/io5";
+import { IoMdCheckmark, IoMdInformationCircle } from "react-icons/io";
+import { IoClose, IoFlag, IoShieldSharp } from "react-icons/io5";
 import api from "../../config/axios";
 import { Image } from "antd";
 import { toast } from "react-toastify";
@@ -9,63 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
-
-const profiles = [
-  {
-    name: "Cy Cy",
-    age: 23,
-    images: [
-      "https://i.pinimg.com/736x/0b/64/af/0b64afdbb1c8a951c18649cc1cc46f6a.jpg",
-      "https://your-image-url.com/2",
-      "https://your-image-url.com/3",
-      "https://your-image-url.com/4",
-      "https://your-image-url.com/5",
-    ],
-    tags: [
-      "Self Care",
-      "House Parties",
-      "Travel",
-      "Self Development",
-      "Expositions",
-    ],
-  },
-  {
-    name: "Nhung",
-    age: 21,
-    images: [
-      "https://thethaovanhoa.mediacdn.vn/372676912336973824/2023/3/11/pinkkkopat3343031907530255828959243814965382366081533n-1678543861089455570321.jpg",
-      "https://your-image-url.com/2",
-      "https://your-image-url.com/3",
-      "https://your-image-url.com/4",
-      "https://your-image-url.com/5",
-    ],
-    tags: ["Art", "Movies", "Music", "Sports", "Photography"],
-  },
-  {
-    name: "Thao",
-    age: 21,
-    images: [
-      "https://cdnphoto.dantri.com.vn/g95vyXd5eHiR0fpHU-kNN1bab4U=/thumb_w/1155/2022/05/18/1216556543587931719867453231343574466568644n1-1652849563857.jpg",
-      "https://your-image-url.com/2",
-      "https://your-image-url.com/3",
-      "https://your-image-url.com/4",
-      "https://your-image-url.com/5",
-    ],
-    tags: ["Art", "Movies", "Music", "Sports", "Photography"],
-  },
-  // {
-  //   name: "Bich",
-  //   age: 21,
-  //   images: [
-  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-  //     "https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/291730269_1354821661692267_2493002724347922926_n.jpg?stp=cp6_dst-jpg&_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF7XBqkW5Cd_djgb24-ZT3ilRCPVAfbbdSVEI9UB9tt1Hc3tl8ekXDtffRtQB92Wvpvkuqx6bM8H-xE37Y2qRtx&_nc_ohc=uVcaTY3vYAQQ7kNvgHgAcxo&_nc_ht=scontent.fsgn2-3.fna&_nc_gid=Aj8e_8nxmCSUNUynpRwQLYi&oh=00_AYBYSJ0aKdQvyk92rCHYhneqt8MV7SVQGQoCxa-kyAVudA&oe=670EE487",
-  //   ],
-  //   tags: ["Art", "Movies", "Music", "Sports", "Photography"],
-  // },
-];
+import { MdOutlineLocationOn } from "react-icons/md";
 
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
@@ -73,12 +17,21 @@ function Matching() {
   const [selectedImage, setSelectedImage] = useState(null);
   const cardRefs = useRef([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenMatches, setIsOpenMatches] = useState(false);
   const [users, setUsers] = useState([]);
   const [userProfile, setUserProfile] = useState("");
+  const [matchesData, setMatchesData] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [reportUserId, setReportUserId] = useState(null);
   const [reportReason, setReportReason] = useState("");
+
+  const [showProfiles, setShowProfiles] = useState(false);
+
+  const handleShowProfiles = () => {
+    setShowProfiles(!showProfiles);
+  };
+
   const openModal = (id) => {
     setReportUserId(id);
     setIsOpen(true);
@@ -115,6 +68,13 @@ function Matching() {
 
   async function swipeUser(toUserId, swipeType) {
     await api.post("/swipe/v1/swipe", { toUserId, swipeType });
+    fetchUserLiked();
+  }
+
+  async function fetchUserLiked() {
+    const response = await api.get("/swipe/v1/getAllLike");
+    console.log(response.data.data);
+    setMatchesData(response.data.data);
   }
 
   async function reportUser(toUserId, reason) {
@@ -151,8 +111,57 @@ function Matching() {
   useEffect(() => {
     fetchDataUser();
     fetchProfile();
+    fetchUserLiked();
   }, []);
 
+  const UserProfile = ({ user }) => {
+    return (
+      <div className="mt-8 border-2 border-gray-300 rounded-lg p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center mb-2">
+            {user.photos?.[0] && (
+              <img
+                src={user.photos[0]}
+                alt={user.fullName}
+                className="w-16 h-16 rounded-full border-2 border-gray-500 mr-2"
+              />
+            )}
+            <div>
+              <h3 className="font-bold">{user.fullName}</h3>
+              <p className="text-sm">About: {user.description}</p>
+              <div className="flex gap-1">
+                <MdOutlineLocationOn />
+                <p className="text-xs text-gray-500">{user.location}</p>
+              </div>
+              <p className="text-xs text-gray-500">Age: {user.age}</p>
+              <p className="text-xs text-gray-500">Level: {user.level}</p>
+              <p className="text-xs text-gray-500">
+                Available: {user.availableTime.join(", ")}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-12 mr-5">
+            <div
+              className="bg-green-500 text-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 hover:bg-green-600 hover:scale-105 shadow-md"
+              onClick={() => {
+                swipeUser(user.id, "LIKE");
+              }}
+            >
+              <IoMdCheckmark size={20} />
+            </div>
+            <div
+              className="bg-red-500 text-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 hover:bg-red-600 hover:scale-105 shadow-md"
+              onClick={() => {
+                swipeUser(user.id, "PASS");
+              }}
+            >
+              <IoClose size={20} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="flex h-screen">
       <div className="w-2/6 bg-gray-100 flex flex-col">
@@ -224,9 +233,30 @@ function Matching() {
 
         <div className="mt-8">
           {currentTab === "matches" ? (
-            <div className="text-center text-gray-600">
-              <h2 className="text-xl font-bold mb-4">Start Matching</h2>
-              <p>Matches will appear here once you start to Like people.</p>
+            <div>
+              <div onClick={handleShowProfiles}>
+                <div className="mt-1 ml-5 border-4 border-yellow-500 w-1/3 h-[200px] rounded-lg p-1 flex justify-center items-center relative transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:bg-gray-100 cursor-pointer">
+                  <div className="bg-gradient-to-t from-green-50 via-neutral-400 to-neutral-600 p-2 rounded-lg flex justify-center items-center w-full h-full flex-col transition-all duration-300 ease-in-out">
+                    <span className="text-2xl font-semibold text-gray-800 rounded-full bg-yellow-200 w-14 h-14 flex items-center justify-center transition-transform duration-300 ease-in-out hover:rotate-12">
+                      {matchesData.length}
+                    </span>
+                    <div className="absolute bottom-[-23px] left-1/2 transform -translate-x-1/2">
+                      <img
+                        src="src/assets/logo/badminton.png"
+                        alt="My Icon"
+                        className="w-12 h-12 transition-transform duration-300 ease-in-out hover:scale-125"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {showProfiles && (
+                <div className="mt-4">
+                  {matchesData.map((user) => (
+                    <UserProfile key={user.id} user={user} />
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center text-gray-600">
@@ -254,7 +284,6 @@ function Matching() {
                   backgroundPosition: "center",
                 }}
               >
-                {/* Information Icon and Modal Trigger */}
                 <button
                   className="absolute top-2 right-2 text-red-500 hover:text-red-600 bg-white p-2 rounded-full shadow-lg"
                   onClick={() => openModal(profile.id)}
@@ -284,7 +313,6 @@ function Matching() {
                       </div>
                     </div>
 
-                    {/* Report Modal */}
                     {isOpen && reportUserId === profile.id && (
                       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
@@ -322,7 +350,6 @@ function Matching() {
                   </div>
                 </div>
 
-                {/* Action buttons */}
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
                   <button
                     className="bg-red-500 text-white w-10 h-10 rounded-full shadow-lg"
@@ -364,7 +391,6 @@ function Matching() {
             </h2>
 
             <div className="flex flex-col gap-4 mb-4">
-              {/* First row of images */}
               <div className="flex justify-between">
                 {selectedProfile.data.photos?.length > 0 ? (
                   selectedProfile.data.photos.map((image, index) => (
@@ -387,9 +413,8 @@ function Matching() {
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
           <div className="relative">
-            {/* Nút đóng ảnh lớn */}
             <button
-              onClick={() => setSelectedImage(null)} // Đóng modal ảnh lớn
+              onClick={() => setSelectedImage(null)}
               className="absolute top-2 right-2 bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-700 transition duration-200"
             >
               &times;

@@ -10,14 +10,6 @@ import { Button, Image, Upload } from "antd";
 import "./index.scss";
 import uploadFile from "../../config/upload";
 import { useNavigate } from "react-router-dom";
-// const getBase64 = (file) =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = (error) => reject(error);
-//   });
-
 const CreateAccount = () => {
   // State để quản lý việc hiển thị form và lưu trữ thông tin
   const [gender, setGender] = useState("");
@@ -58,14 +50,12 @@ const CreateAccount = () => {
     setUserData((prevUserData) => ({ ...prevUserData, [name]: value }));
   };
   const handleTimeSelection = (time) => {
-    if (times.includes(time)) {
-      // If the time is already selected, remove it from the array
-      setTimes(times.filter((t) => t !== time));
-    } else {
-      // If the time is not selected, add it to the array
-      setTimes([...times, time]);
-      setUserData({ ...userData, availableTime: times });
-    }
+    const updatedTimes = times.includes(time)
+      ? times.filter((t) => t !== time) // Remove if already selected
+      : [...times, time]; // Add if not selected
+
+    setTimes(updatedTimes);
+    setUserData((prevData) => ({ ...prevData, availableTime: updatedTimes }));
   };
 
   const registerUser = async (e) => {
@@ -75,16 +65,20 @@ const CreateAccount = () => {
       return;
     }
     try {
-      if (fileList.length > 0) {
-        const uploadedUrls = await Promise.all(
-          fileList.map((file) => uploadFile(file.originFileObj))
-        );
-        setUserData({ ...userData, photo: uploadedUrls });
-      }
-      const response = await api.post("/user/v1/register", userData);
+      const uploadedUrls = await Promise.all(
+        fileList.map((file) => uploadFile(file.originFileObj))
+      );
+
+      const updatedUserData = { ...userData, photo: uploadedUrls };
+      setUserData(updatedUserData);
+
+      const response = await api.post("/user/v1/register", updatedUserData);
       console.log(response.data);
+      toast.success("Registration successful!");
+      navigate("/login");
     } catch (error) {
       console.log(error);
+      toast.error("Registration failed. Please try again.");
     }
   };
 
@@ -102,11 +96,15 @@ const CreateAccount = () => {
     });
 
   const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    try {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      setPreviewImage(file.url || file.preview);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error("Image preview failed: ", error);
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
   };
 
   const handleChange = async ({ fileList: newFileList }) => {
@@ -153,10 +151,7 @@ const CreateAccount = () => {
       {!showFormRule && (
         <form
           className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
-          onSubmit={() => {
-            registerUser();
-            navigate("/login");
-          }}
+          onSubmit={registerUser}
         >
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-5xl md:w-2/3">
             <h1 className="text-2xl font-bold mb-6 text-center">
@@ -265,23 +260,23 @@ const CreateAccount = () => {
                       type="button"
                       name="gender"
                       className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
-                        gender === "Man" ? "border-green-400 bg-green-100" : ""
+                        gender === "MALE" ? "border-green-400 bg-green-100" : ""
                       }`}
-                      onClick={() => handleGenderSelection("Man")}
+                      onClick={() => handleGenderSelection("MALE")}
                     >
-                      Man
+                      Male
                     </button>
                     <button
                       type="button"
                       name="gender"
                       className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
-                        gender === "Woman"
+                        gender === "FEMALE"
                           ? "border-green-400 bg-green-100"
                           : ""
                       }`}
                       onClick={() => handleGenderSelection("Woman")}
                     >
-                      Woman
+                      Female
                     </button>
                   </div>
                   <div className="mt-1">
