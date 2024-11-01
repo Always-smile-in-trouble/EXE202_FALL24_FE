@@ -45,9 +45,11 @@ function Matching() {
 
   const onSwipe = (direction, profileName, profileId) => {
     if (direction === "right") {
-      swipeUser(profileId, "LIKE"); // Like swipe
+      swipeUser(profileId, "LIKE");
+      fetchDataUser(); // Like swipe
     } else if (direction === "left") {
-      swipeUser(profileId, "PASS"); // Pass swipe
+      swipeUser(profileId, "PASS");
+      fetchDataUser(); // Pass swipe
     }
   };
 
