@@ -88,6 +88,7 @@ function Matching() {
     });
     closeModal();
     setSelectedReason("");
+    fetchDataUser();
   }
 
   async function getInforById(id) {
