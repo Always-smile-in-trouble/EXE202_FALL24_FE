@@ -13,7 +13,7 @@ function MemberShip() {
   async function paymentPayOS(subscriptionId) {
     const redirectUrl =
       process.env.NODE_ENV === "production"
-        ? "https://shuttle-smash.vercel.app/paymentReturn"
+        ? "https://shuttle-match.vercel.app/paymentReturn"
         : "http://localhost:5173/paymentReturn";
 
     const res = await api.post("/payos/v1/subscriptionPayment", {
