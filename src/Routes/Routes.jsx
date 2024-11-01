@@ -28,16 +28,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // {
-  //   path: "/room-messages",
-  //   element: <RoomChat />,
-  //   children: [
-  //     {
-  //       path: ":id",
-  //       element: <ChatDetail />,
-  //     },
-  //   ],
-  // },
   {
     path: "/login",
     element: <LoginAndRegister />,
