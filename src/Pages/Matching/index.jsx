@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineLocationOn } from "react-icons/md";
+import logo from "../../assets/logo/badminton.png";
 
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
@@ -242,7 +243,7 @@ function Matching() {
                     </span>
                     <div className="absolute bottom-[-23px] left-1/2 transform -translate-x-1/2">
                       <img
-                        src="src/assets/logo/badminton.png"
+                        src={logo}
                         alt="My Icon"
                         className="w-12 h-12 transition-transform duration-300 ease-in-out hover:scale-125"
                       />
