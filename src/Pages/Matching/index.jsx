@@ -1,13 +1,14 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
 import { IoMdCheckmark, IoMdInformationCircle } from "react-icons/io";
 import { IoClose, IoFlag, IoShieldSharp } from "react-icons/io5";
 import { FaExclamationTriangle } from "react-icons/fa";
 import api from "../../config/axios";
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineLocationOn } from "react-icons/md";
@@ -84,7 +85,6 @@ function Matching() {
 
   async function fetchUserLiked() {
     const response = await api.get("/swipe/v1/getAllLike");
-    console.log(response.data.data);
     setMatchesData(response.data.data);
   }
 
@@ -101,7 +101,6 @@ function Matching() {
   async function getInforById(id) {
     try {
       const response = await api.get(`/user/v1/getInfo/${id}`);
-      console.log(response.data);
       setSelectedProfile(response.data);
     } catch (e) {
       toast.error("Error");
@@ -110,22 +109,18 @@ function Matching() {
 
   async function fetchDataUser() {
     const response = await api.get("/user/v1/getAll");
-    console.log(response.data.data);
     const datas = response.data.data;
-    console.log(datas);
     setUsers(datas);
   }
 
   async function fetchProfile() {
     const response = await api.get("/user/v1/getUserInfo");
-    console.log(response.data.data);
     setUserProfile(response.data.data);
   }
 
   async function fetchReasons() {
     const response = await api.get("/report/v1/listReason");
     setReportReasons(response.data);
-    console.log(response.data);
   }
 
   useEffect(() => {
@@ -220,6 +215,11 @@ function Matching() {
   ];
 
   const ChatBox = ({ chat, onClick }) => {
+    const user = useSelector((store) => store.userLogin);
+    const getLablename = () => {
+      return chat?.users?.filter((item) => item?.id == user?.userId)[0]
+        .fullName;
+    };
     return (
       <div
         className="border-b border-gray-300 p-4 cursor-pointer hover:bg-green-100 transition duration-200 flex items-center rounded-lg shadow-sm"
@@ -233,7 +233,7 @@ function Matching() {
           />
         )}
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">{chat.sender}</span>
+          <span className="font-semibold text-gray-800">{getLablename()}</span>
           <span className="text-gray-500 text-sm truncate">
             {chat.lastMessage}
           </span>
@@ -242,28 +242,54 @@ function Matching() {
     );
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+  const handleSendMessage = (idRoom) => {
+    // if (newMessage.trim() === "") return;
+    // // Cập nhật cuộc trò chuyện với tin nhắn mới
+    // const updatedMessages = [
+    //   ...selectedChat.messages,
+    //   { sender: "You", message: newMessage },
+    // ];
+    // setSelectedChat({ ...selectedChat, messages: updatedMessages });
+    // setNewMessage("");
+    // // Cập nhật vào mockChats (cập nhật thực tế nếu lưu trong state)
+    // mockChats.forEach((chat) => {
+    //   if (chat.id === selectedChat.id) {
+    //     chat.messages = updatedMessages;
+    //   }
+    // });
 
-    // Cập nhật cuộc trò chuyện với tin nhắn mới
-    const updatedMessages = [
-      ...selectedChat.messages,
-      { sender: "You", message: newMessage },
-    ];
-    setSelectedChat({ ...selectedChat, messages: updatedMessages });
-    setNewMessage("");
-
-    // Cập nhật vào mockChats (cập nhật thực tế nếu lưu trong state)
-    mockChats.forEach((chat) => {
-      if (chat.id === selectedChat.id) {
-        chat.messages = updatedMessages;
-      }
+    const response = api.post(`/chat/send/${selectedChat?.roomID}`, {
+      message: newMessage,
     });
   };
   const [selectedChat, setSelectedChat] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
   const [currentIndex, setCurrentIndex] = useState(0); // Thẻ hiện tại đang quẹt
+
+  const [room, setRoom] = useState([]);
+
+  const fetchRoom = async () => {
+    try {
+      const response = await api.get("chat");
+      setRoom(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoom();
+  }, []);
+
+  const isSender = (data) => {
+    return data !== user?.userId;
+  };
+
+  const user = useSelector((store) => store.userLogin);
+  const getOtherUserNames = (data) => {
+    return data?.user.id == user?.userId ? "YOU" : data?.user?.fullName;
+  };
   return (
     <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
@@ -384,7 +410,7 @@ function Matching() {
               {/* Danh sách hộp chat hoặc lịch sử tin nhắn */}
               {!selectedChat ? (
                 <div className="grid gap-2">
-                  {mockChats.map((chat) => (
+                  {room?.map((chat) => (
                     <ChatBox
                       key={chat.id}
                       chat={chat}
@@ -411,7 +437,9 @@ function Matching() {
                       <div
                         key={index}
                         className={`flex ${
-                          msg.sender === "You" ? "justify-end" : "justify-start"
+                          isSender(msg.messageID)
+                            ? "justify-end"
+                            : "justify-start"
                         }`}
                       >
                         <span
@@ -421,8 +449,7 @@ function Matching() {
                               : "bg-gray-300 text-gray-800"
                           }`}
                         >
-                          {msg.sender === "You" ? "You" : msg.sender}:{" "}
-                          {msg.message}
+                          {getOtherUserNames(msg)}: {msg.message}
                         </span>
                       </div>
                     ))}
