@@ -247,6 +247,7 @@ function Matching() {
     await api.post(`/chat/send/${selectedChat?.roomID}`, {
       message: newMessage,
     });
+    setNewMessage("");
     await fetchChatDetails();
     scrollToBottom();
   };
