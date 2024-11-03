@@ -35,6 +35,12 @@ const router = createBrowserRouter([
   {
     path: "/matching",
     element: <Matching />,
+    children: [
+      {
+        path: "/matching:id",
+        element: <Matching />,
+      },
+    ],
   },
   {
     path: "/createaccount",

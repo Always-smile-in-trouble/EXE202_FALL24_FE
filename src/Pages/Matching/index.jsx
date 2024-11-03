@@ -7,7 +7,7 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import api from "../../config/axios";
 import { Image, message } from "antd";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
@@ -15,6 +15,7 @@ import { MdOutlineLocationOn } from "react-icons/md";
 import logo from "../../assets/logo/badminton.png";
 import badmintonImage from "../../assets/logo/14.webp";
 import badmintonWait from "../../assets/logo/11.webp";
+import useRealtime from "../../Hooks/useRealTime";
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -242,25 +243,19 @@ function Matching() {
     );
   };
 
-  const handleSendMessage = (idRoom) => {
-    // if (newMessage.trim() === "") return;
-    // // Cập nhật cuộc trò chuyện với tin nhắn mới
-    // const updatedMessages = [
-    //   ...selectedChat.messages,
-    //   { sender: "You", message: newMessage },
-    // ];
-    // setSelectedChat({ ...selectedChat, messages: updatedMessages });
-    // setNewMessage("");
-    // // Cập nhật vào mockChats (cập nhật thực tế nếu lưu trong state)
-    // mockChats.forEach((chat) => {
-    //   if (chat.id === selectedChat.id) {
-    //     chat.messages = updatedMessages;
-    //   }
-    // });
-
-    const response = api.post(`/chat/send/${selectedChat?.roomID}`, {
+  const handleSendMessage = async (idRoom) => {
+    await api.post(`/chat/send/${selectedChat?.roomID}`, {
       message: newMessage,
     });
+    await fetchChatDetails();
+    scrollToBottom();
+  };
+  const chatContainerRef = useRef(null);
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
   };
   const [selectedChat, setSelectedChat] = useState(null);
   const [newMessage, setNewMessage] = useState("");
@@ -282,9 +277,38 @@ function Matching() {
     fetchRoom();
   }, []);
 
-  const isSender = (data) => {
-    return data !== user?.userId;
+  const [chatDetails, setChatDetails] = useState([]);
+  const { id } = useParams();
+  const fetchChatDetails = async () => {
+    try {
+      const response = await api.get(`chat/detail/${id}`);
+      console.log(response.data);
+      setSelectedChat(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+    fetchChatDetails();
+  }, [id]);
+
+  useRealtime(async (body) => {
+    console.log(body);
+    if (body.body === "New message") {
+      await fetchChatDetails();
+    }
+  });
+  const isSender = (data) => {
+    return data?.id == user?.userId;
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedChat?.messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
 
   const user = useSelector((store) => store.userLogin);
   const getOtherUserNames = (data) => {
@@ -407,14 +431,16 @@ function Matching() {
             </div>
           ) : (
             <div className="p-4 space-y-4">
-              {/* Danh sách hộp chat hoặc lịch sử tin nhắn */}
               {!selectedChat ? (
                 <div className="grid gap-2">
                   {room?.map((chat) => (
                     <ChatBox
                       key={chat.id}
                       chat={chat}
-                      onClick={() => setSelectedChat(chat)}
+                      onClick={() => {
+                        navigate(`/matching/${chat.roomID}`);
+                        setSelectedChat(chat);
+                      }}
                       className="hover:bg-green-100 transition duration-200 rounded-lg p-2 shadow-md cursor-pointer"
                     />
                   ))}
@@ -432,14 +458,15 @@ function Matching() {
                       Back to Chats
                     </button>
                   </div>
-                  <div className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2">
+                  <div
+                    ref={chatContainerRef}
+                    className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
+                  >
                     {selectedChat.messages.map((msg, index) => (
                       <div
                         key={index}
                         className={`flex ${
-                          isSender(msg.messageID)
-                            ? "justify-end"
-                            : "justify-start"
+                          isSender(msg.user) ? "justify-end" : "justify-start"
                         }`}
                       >
                         <span

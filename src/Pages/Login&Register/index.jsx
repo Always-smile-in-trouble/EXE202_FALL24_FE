@@ -63,6 +63,7 @@ const Index = () => {
       toast.success("Đăng nhập thành công!");
       console.log(res.data.data);
       localStorage.setItem("token", res.data.data.accessToken);
+      localStorage.setItem("userId", res.data.data.userId);
       dispatch(login(res.data.data));
       navigate("/matching");
     } catch (e) {
