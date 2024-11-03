@@ -36,8 +36,14 @@ const Index = () => {
 
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
+
+    if (!email || !password || !confirmPassword) {
+      toast.error("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
     if (password !== confirmPassword) {
-      toast.error("Password is not match!");
+      toast.error("Mật khẩu không khớp!");
     } else {
       dispatch(register({ email: email, password: password }));
       setEmail("");

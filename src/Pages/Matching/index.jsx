@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
 import { IoMdCheckmark, IoMdInformationCircle } from "react-icons/io";
 import { IoClose, IoFlag, IoShieldSharp } from "react-icons/io5";
+import { FaExclamationTriangle } from "react-icons/fa";
 import api from "../../config/axios";
 import { Image } from "antd";
 import { toast } from "react-toastify";
@@ -11,8 +12,8 @@ import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineLocationOn } from "react-icons/md";
 import logo from "../../assets/logo/badminton.png";
-import badmintonImage from "../../assets/logo/badminton1.png";
-
+import badmintonImage from "../../assets/logo/14.webp";
+import badmintonWait from "../../assets/logo/11.webp";
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -29,6 +30,7 @@ function Matching() {
   const [reportReasons, setReportReasons] = useState([]); // State để lưu danh sách lý do
   const [selectedReason, setSelectedReason] = useState("");
   const [showProfiles, setShowProfiles] = useState(false);
+  const [allSwiped, setAllSwiped] = useState(false);
 
   const handleShowProfiles = () => {
     setShowProfiles(!showProfiles);
@@ -46,10 +48,15 @@ function Matching() {
   const onSwipe = (direction, profileName, profileId) => {
     if (direction === "right") {
       swipeUser(profileId, "LIKE");
-      fetchDataUser(); // Like swipe
+      setCurrentIndex((prevIndex) => prevIndex + 1);
     } else if (direction === "left") {
       swipeUser(profileId, "PASS");
-      fetchDataUser(); // Pass swipe
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+    }
+
+    // Kiểm tra xem đã quét hết người dùng hay chưa
+    if (currentIndex + 1 >= users.length) {
+      setAllSwiped(true); // Thay đổi trạng thái để cho biết đã quét hết
     }
   };
 
@@ -137,7 +144,7 @@ function Matching() {
               <img
                 src={user.photos[0]}
                 alt={user.fullName}
-                className="w-16 h-16 rounded-full border-2 border-gray-500 mr-2"
+                className="w-16 h-16 rounded-full border-2 border-gray-500 mr-2 object-cover"
               />
             )}
             <div>
@@ -184,7 +191,7 @@ function Matching() {
       photo:
         "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/3528382f6a66d2388b774.jpg?alt=media&token=17a36a25-e809-4075-94fa-c7e60b67d9c2",
       messages: [
-        { sender: "User1", message: "Hello! How are you?" },
+        { sender: "Khải", message: "Hello! How are you?" },
         { sender: "You", message: "I am good, thanks!" },
       ],
     },
@@ -195,7 +202,7 @@ function Matching() {
       photo:
         "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/a17ce0c7c88f70d1299e11.jpg?alt=media&token=1cfde36f-dc61-43e5-8d2a-beeab89abb43",
       messages: [
-        { sender: "User2", message: "Are you coming to the game?" },
+        { sender: "Linh", message: "Are you coming to the game?" },
         { sender: "You", message: "Yes, I will be there!" },
       ],
     },
@@ -206,7 +213,7 @@ function Matching() {
       photo:
         "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/_MG_8550-2.jpg?alt=media&token=d7577b2c-ad4c-4b3f-83e4-fa7edb6136f1",
       messages: [
-        { sender: "User3", message: "Let’s meet up!" },
+        { sender: "Tiến", message: "Let’s meet up!" },
         { sender: "You", message: "Sure, when?" },
       ],
     },
@@ -255,6 +262,8 @@ function Matching() {
   };
   const [selectedChat, setSelectedChat] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+
+  const [currentIndex, setCurrentIndex] = useState(0); // Thẻ hiện tại đang quẹt
   return (
     <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
@@ -359,7 +368,7 @@ function Matching() {
                         <img
                           src={badmintonImage}
                           alt="No Matches"
-                          className="w-32 h-32 mb-4"
+                          className="w-36 h-36 mb-4"
                         />
                       </div>
                       <h2 className="text-xl font-semibold text-gray-800">
@@ -443,115 +452,128 @@ function Matching() {
 
       <div className="w-3/4 flex justify-center items-center bg-gray-50">
         <div className="relative w-[380px] h-[620px]">
-          {users.map((profile, index) => (
-            <TinderCard
-              key={profile.id}
-              onSwipe={(dir) => onSwipe(dir, profile.fullName, profile.id)}
-              onCardLeftScreen={() => {
-                cardRefs.current[index].restoreCard();
-              }}
-              className="absolute w-full h-full"
-              ref={(el) => (cardRefs.current[index] = el)}
-            >
-              <div
-                className="bg-white rounded-lg shadow-lg w-full h-full overflow-hidden relative"
-                style={{
-                  backgroundImage: `url(${profile.photos[0]})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
+          {allSwiped ? ( // Kiểm tra xem có đã quét hết chưa
+            <div className="flex flex-col justify-center items-center h-full opacity-75 transition-opacity duration-500">
+              <img
+                src={badmintonWait} // Thay đổi thành đường dẫn tới hình ảnh của bạn
+                alt="No data found"
+                className="w-96 h-64 mb-2" // Điều chỉnh kích thước hình ảnh theo ý muốn
+              />
+              <h2 className="text-xl font-bold text-gray-500 animate-fadeIn">
+                Please wait for more teammates
+              </h2>
+            </div>
+          ) : (
+            users.map((profile, index) => (
+              <TinderCard
+                key={profile.id}
+                onSwipe={(dir) => onSwipe(dir, profile.fullName, profile.id)}
+                preventSwipe={["left", "right", "up", "down"]} // Ngăn swipe lên/xuống
+                className="absolute w-full h-full"
+                ref={(el) => (cardRefs.current[index] = el)}
               >
-                <button
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-600 bg-white p-2 rounded-full shadow-lg"
-                  onClick={() => openModal(profile.id)}
+                <div
+                  className="bg-white rounded-lg shadow-lg w-full h-full overflow-hidden relative"
+                  style={{
+                    backgroundImage: `url(${profile.photos[0]})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
                 >
-                  <IoFlag className="text-xl" />
-                </button>
+                  <button
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-600 bg-white p-2 rounded-full shadow-lg"
+                    onClick={() => openModal(profile.id)}
+                  >
+                    <IoFlag className="text-xl" />
+                  </button>
 
-                {/* Name, Age, and See Profile Button */}
-                <div className="mt-[390px]">
-                  <div className="p-4 flex justify-between items-center bg-transparent bg-opacity-80">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-5">
-                        <h2 className="text-2xl font-bold text-white">
-                          {profile.fullName.split(" ")[0]}, {profile.age}
-                        </h2>
-                        <button
-                          onClick={() => getInforById(profile.id)}
-                          className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
-                        >
-                          See Profile...
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-white">
-                        <FaLocationDot className="text-xl text-white" />
-                        <span>{profile.location}</span>
-                      </div>
-                    </div>
-
-                    {isOpen && reportUserId === profile.id && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
-                          <h2 className="text-2xl font-semibold text-center text-red-500 mb-6">
-                            Report {profile.fullName}
+                  {/* Name, Age, and See Profile Button */}
+                  <div className="mt-[390px]">
+                    <div className="p-4 flex justify-between items-center bg-transparent bg-opacity-80">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-5">
+                          <h2 className="text-2xl font-bold text-white">
+                            {profile.fullName.split(" ")[0]}, {profile.age}
                           </h2>
-                          <select
-                            value={selectedReason}
-                            onChange={(e) => setSelectedReason(e.target.value)}
-                            className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                          <button
+                            onClick={() => getInforById(profile.id)}
+                            className="text-green-500 border border-transparent hover:border-green-500 hover:bg-opacity-10 bg-transparent px-3 py-1 rounded-full ml-2"
                           >
-                            <option value="" disabled>
-                              Select a reason
-                            </option>
-                            {reportReasons.map((reason) => (
-                              <option key={reason.name} value={reason.name}>
-                                {reason.reason}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="flex justify-between items-center">
-                            <button
-                              className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
-                              onClick={() =>
-                                reportUser(profile.id, selectedReason)
-                              } // Bọc hàm trong arrow function
-                            >
-                              Confirm
-                            </button>
-                            <button
-                              onClick={closeModal}
-                              className="text-gray-500 hover:text-white hover:bg-black px-6 py-2 border border-gray-300 rounded-full transition duration-200"
-                            >
-                              CANCEL
-                            </button>
-                          </div>
+                            See Profile...
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-white">
+                          <FaLocationDot className="text-xl text-white" />
+                          <span>{profile.location}</span>
                         </div>
                       </div>
-                    )}
+
+                      {isOpen && reportUserId === profile.id && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                          <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
+                            <h2 className="text-2xl font-semibold text-center text-red-500 mb-6">
+                              Report {profile.fullName}
+                            </h2>
+                            <select
+                              value={selectedReason}
+                              onChange={(e) =>
+                                setSelectedReason(e.target.value)
+                              }
+                              className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                            >
+                              <option value="" disabled>
+                                Select a reason
+                              </option>
+                              {reportReasons.map((reason) => (
+                                <option key={reason.name} value={reason.name}>
+                                  {reason.reason}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="flex justify-between items-center">
+                              <button
+                                className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                                onClick={() =>
+                                  reportUser(profile.id, selectedReason)
+                                } // Bọc hàm trong arrow function
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                onClick={closeModal}
+                                className="text-gray-500 hover:text-white hover:bg-black px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                              >
+                                CANCEL
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                    <button
+                      className="bg-red-500 text-white w-10 h-10 rounded-full shadow-lg"
+                      onClick={() => swipeLeft(index)}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                    <button className="bg-blue-500 text-white w-10 h-10 rounded-full shadow-lg">
+                      <i className="fas fa-star"></i>
+                    </button>
+                    <button
+                      className="bg-green-500 text-white w-10 h-10 rounded-full shadow-lg"
+                      onClick={() => swipeRight(index)}
+                    >
+                      <i className="fas fa-heart"></i>
+                    </button>
                   </div>
                 </div>
-
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
-                  <button
-                    className="bg-red-500 text-white w-10 h-10 rounded-full shadow-lg"
-                    onClick={() => swipeLeft(index)}
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
-                  <button className="bg-blue-500 text-white w-10 h-10 rounded-full shadow-lg">
-                    <i className="fas fa-star"></i>
-                  </button>
-                  <button
-                    className="bg-green-500 text-white w-10 h-10 rounded-full shadow-lg"
-                    onClick={() => swipeRight(index)}
-                  >
-                    <i className="fas fa-heart"></i>
-                  </button>
-                </div>
-              </div>
-            </TinderCard>
-          ))}
+              </TinderCard>
+            ))
+          )}
         </div>
       </div>
 

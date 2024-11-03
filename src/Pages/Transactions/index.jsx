@@ -32,7 +32,7 @@ const TransactionHistory = () => {
   };
 
   return (
-    <div className="container mx-auto h-3/4 p-4">
+    <div className="container mx-auto h-screen p-4">
       {" "}
       {/* Thay đổi chiều cao ở đây */}
       <button
