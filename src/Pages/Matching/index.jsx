@@ -544,12 +544,12 @@ function Matching() {
 
       <div className="w-3/4 flex justify-center items-center bg-gray-50">
         <div className="relative w-[380px] h-[620px]">
-          {allSwiped ? ( // Kiểm tra xem có đã quét hết chưa
+          {allSwiped ? (
             <div className="flex flex-col justify-center items-center h-full opacity-75 transition-opacity duration-500">
               <img
-                src={badmintonWait} // Thay đổi thành đường dẫn tới hình ảnh của bạn
+                src={badmintonWait}
                 alt="No data found"
-                className="w-96 h-64 mb-2" // Điều chỉnh kích thước hình ảnh theo ý muốn
+                className="w-96 h-64 mb-2"
               />
               <h2 className="text-xl font-bold text-gray-500 animate-fadeIn">
                 Please wait for more teammates
