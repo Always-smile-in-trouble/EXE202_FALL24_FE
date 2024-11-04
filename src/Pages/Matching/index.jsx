@@ -268,18 +268,55 @@ function Matching() {
     <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
         <div className="flex items-center justify-between mb-3 bg-green-400 p-4">
-          <div className="flex items-center">
-            {userProfile?.photos?.[0] && (
-              <img
-                src={userProfile.photos[0]}
-                alt="Profile"
-                className="w-12 h-12 rounded-full border-2 border-gray-500 mr-2 object-cover"
-              />
-            )}
-            <span className="text-sm font-bold text-white ml-1">
-              {userProfile.fullName}
-            </span>
+          <div
+            className={`flex items-center  ${
+              userProfile.diamondMember
+                ? "bg-gray-800 p-3 rounded-lg shadow-lg relative"
+                : ""
+            }`}
+          >
+            <div className="relative">
+              {userProfile?.photos?.[0] && (
+                <img
+                  src={userProfile.photos[0]}
+                  alt="Profile"
+                  className={`w-12 h-12 rounded-full border-2 object-cover shadow-lg ${
+                    userProfile.diamondMember
+                      ? "border-yellow-400"
+                      : "border-gray-400"
+                  }`}
+                />
+              )}
+
+              {userProfile.diamondMember && (
+                <div className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-yellow-400 p-1 rounded-full shadow-md">
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.18 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center ml-3">
+              <span className="text-sm font-bold text-white mr-2">
+                {userProfile?.fullName?.split(" ")[0] || ""}
+              </span>
+
+              {userProfile.diamondMember && (
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs font-semibold text-yellow-400 bg-gray-900 px-2 py-0.5 rounded-full shadow-lg animate-pulse">
+                    Membership
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
+
           <div className="flex space-x-6 items-center">
             <div className="flex flex-col justify-center items-center">
               <i

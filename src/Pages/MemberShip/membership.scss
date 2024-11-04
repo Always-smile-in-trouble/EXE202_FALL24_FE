@@ -33,8 +33,9 @@
     padding: 40px;
     overflow: hidden;
     position: relative; 
-    flex: 1;                           /* Allow each item to grow equally */
-    margin: 0 50px;                   /* Add horizontal margins for spacing */
+    flex: 1 0 30%; /* Cho phép mỗi gói chiếm 30% chiều rộng, điều chỉnh cho phù hợp */
+    margin: 10px; /* Khoảng cách giữa các gói */
+    min-width: 335px; /* Đặt chiều rộng tối thiểu nếu cần */
   }
   
   .pricing-table .col-md-5:not(:last-child) .item {
@@ -101,3 +102,4 @@
     justify-items: center;
     padding-bottom: 105px;
 }
+
