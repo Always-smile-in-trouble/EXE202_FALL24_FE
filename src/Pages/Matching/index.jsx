@@ -1,19 +1,21 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
 import { IoMdCheckmark, IoMdInformationCircle } from "react-icons/io";
 import { IoClose, IoFlag, IoShieldSharp } from "react-icons/io5";
 import { FaExclamationTriangle } from "react-icons/fa";
 import api from "../../config/axios";
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineLocationOn } from "react-icons/md";
 import logo from "../../assets/logo/badminton.png";
 import badmintonImage from "../../assets/logo/14.webp";
 import badmintonWait from "../../assets/logo/11.webp";
+import useRealtime from "../../Hooks/useRealTime";
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -84,7 +86,6 @@ function Matching() {
 
   async function fetchUserLiked() {
     const response = await api.get("/swipe/v1/getAllLike");
-    console.log(response.data.data);
     setMatchesData(response.data.data);
   }
 
@@ -101,7 +102,6 @@ function Matching() {
   async function getInforById(id) {
     try {
       const response = await api.get(`/user/v1/getInfo/${id}`);
-      console.log(response.data);
       setSelectedProfile(response.data);
     } catch (e) {
       toast.error("Error");
@@ -110,22 +110,18 @@ function Matching() {
 
   async function fetchDataUser() {
     const response = await api.get("/user/v1/getAll");
-    console.log(response.data.data);
     const datas = response.data.data;
-    console.log(datas);
     setUsers(datas);
   }
 
   async function fetchProfile() {
     const response = await api.get("/user/v1/getUserInfo");
-    console.log(response.data.data);
     setUserProfile(response.data.data);
   }
 
   async function fetchReasons() {
     const response = await api.get("/report/v1/listReason");
     setReportReasons(response.data);
-    console.log(response.data);
   }
 
   useEffect(() => {
@@ -220,6 +216,11 @@ function Matching() {
   ];
 
   const ChatBox = ({ chat, onClick }) => {
+    const user = useSelector((store) => store.userLogin);
+    const getLablename = () => {
+      return chat?.users?.filter((item) => item?.id == user?.userId)[0]
+        .fullName;
+    };
     return (
       <div
         className="border-b border-gray-300 p-4 cursor-pointer hover:bg-green-100 transition duration-200 flex items-center rounded-lg shadow-sm"
@@ -233,7 +234,7 @@ function Matching() {
           />
         )}
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">{chat.sender}</span>
+          <span className="font-semibold text-gray-800">{getLablename()}</span>
           <span className="text-gray-500 text-sm truncate">
             {chat.lastMessage}
           </span>
@@ -242,28 +243,78 @@ function Matching() {
     );
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
-
-    // Cập nhật cuộc trò chuyện với tin nhắn mới
-    const updatedMessages = [
-      ...selectedChat.messages,
-      { sender: "You", message: newMessage },
-    ];
-    setSelectedChat({ ...selectedChat, messages: updatedMessages });
-    setNewMessage("");
-
-    // Cập nhật vào mockChats (cập nhật thực tế nếu lưu trong state)
-    mockChats.forEach((chat) => {
-      if (chat.id === selectedChat.id) {
-        chat.messages = updatedMessages;
-      }
+  const handleSendMessage = async (idRoom) => {
+    await api.post(`/chat/send/${selectedChat?.roomID}`, {
+      message: newMessage,
     });
+    setNewMessage("");
+    await fetchChatDetails();
+    scrollToBottom();
+  };
+  const chatContainerRef = useRef(null);
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
   };
   const [selectedChat, setSelectedChat] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
   const [currentIndex, setCurrentIndex] = useState(0); // Thẻ hiện tại đang quẹt
+
+  const [room, setRoom] = useState([]);
+
+  const fetchRoom = async () => {
+    try {
+      const response = await api.get("chat");
+      setRoom(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoom();
+  }, []);
+
+  const [chatDetails, setChatDetails] = useState([]);
+  const { id } = useParams();
+  const fetchChatDetails = async () => {
+    try {
+      const response = await api.get(`chat/detail/${id}`);
+      console.log(response.data);
+      setSelectedChat(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatDetails();
+  }, [id]);
+
+  useRealtime(async (body) => {
+    console.log(body);
+    if (body.body === "New message") {
+      await fetchChatDetails();
+    }
+  });
+  const isSender = (data) => {
+    return data?.id == user?.userId;
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedChat?.messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
+  const user = useSelector((store) => store.userLogin);
+  const getOtherUserNames = (data) => {
+    return data?.user.id == user?.userId ? "YOU" : data?.user?.fullName;
+  };
   return (
     <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
@@ -418,14 +469,16 @@ function Matching() {
             </div>
           ) : (
             <div className="p-4 space-y-4">
-              {/* Danh sách hộp chat hoặc lịch sử tin nhắn */}
               {!selectedChat ? (
                 <div className="grid gap-2">
-                  {mockChats.map((chat) => (
+                  {room?.map((chat) => (
                     <ChatBox
                       key={chat.id}
                       chat={chat}
-                      onClick={() => setSelectedChat(chat)}
+                      onClick={() => {
+                        navigate(`/matching/${chat.roomID}`);
+                        setSelectedChat(chat);
+                      }}
                       className="hover:bg-green-100 transition duration-200 rounded-lg p-2 shadow-md cursor-pointer"
                     />
                   ))}
@@ -443,12 +496,15 @@ function Matching() {
                       Back to Chats
                     </button>
                   </div>
-                  <div className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2">
+                  <div
+                    ref={chatContainerRef}
+                    className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
+                  >
                     {selectedChat.messages.map((msg, index) => (
                       <div
                         key={index}
                         className={`flex ${
-                          msg.sender === "You" ? "justify-end" : "justify-start"
+                          isSender(msg.user) ? "justify-end" : "justify-start"
                         }`}
                       >
                         <span
@@ -458,8 +514,7 @@ function Matching() {
                               : "bg-gray-300 text-gray-800"
                           }`}
                         >
-                          {msg.sender === "You" ? "You" : msg.sender}:{" "}
-                          {msg.message}
+                          {getOtherUserNames(msg)}: {msg.message}
                         </span>
                       </div>
                     ))}

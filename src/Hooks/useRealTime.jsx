@@ -3,7 +3,8 @@ import React, { useEffect } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 function useRealtime(callback) {
-  const WS_URL = "https://shuttle-match-be.onrender.com/api";
+  // const WS_URL = "https://shuttle-match-be.onrender.com/api";
+  const WS_URL = "http://127.0.0.1:8080/api/websocket";
   const socket = new SockJS(WS_URL);
   const stomp = Stomp.over(socket);
   const accountID = localStorage.getItem("userId");
