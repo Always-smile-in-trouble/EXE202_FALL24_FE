@@ -33,6 +33,7 @@ function Matching() {
   const [selectedReason, setSelectedReason] = useState("");
   const [showProfiles, setShowProfiles] = useState(false);
   const [allSwiped, setAllSwiped] = useState(false);
+  const [swipeFailed, setSwipeFailed] = useState(false);
 
   const handleShowProfiles = () => {
     setShowProfiles(!showProfiles);
@@ -47,24 +48,27 @@ function Matching() {
     setIsOpen(false);
   };
 
-  const onSwipe = (direction, profileName, profileId) => {
+  const onSwipe = async (direction, profileName, profileId) => {
+    if (swipeFailed) {
+      return toast.error("You have run out of likes for the day");
+    }
+
     if (direction === "right") {
-      swipeUser(profileId, "LIKE");
-      setCurrentIndex((prevIndex) => prevIndex + 1);
+      const result = await swipeUser(profileId, "LIKE");
+      if (result) {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+      }
     } else if (direction === "left") {
-      swipeUser(profileId, "PASS");
-      setCurrentIndex((prevIndex) => prevIndex + 1);
+      const result = await swipeUser(profileId, "PASS");
+      if (result) {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+      }
     }
 
-    // Kiểm tra xem đã quét hết người dùng hay chưa
+    // Check if all users have been swiped
     if (currentIndex + 1 >= users.length) {
-      setAllSwiped(true); // Thay đổi trạng thái để cho biết đã quét hết
+      setAllSwiped(true); // Indicate that all users have been swiped
     }
-  };
-
-  const handleCloseModal = () => {
-    setSelectedProfile(null);
-    setSelectedImage(null);
   };
 
   const handleImageClick = (image) => {
@@ -72,16 +76,43 @@ function Matching() {
   };
 
   const swipeLeft = (index) => {
-    cardRefs.current[index].swipe("left");
+    if (swipeFailed) {
+      toast.error("You have run out of likes for the day");
+    } else {
+      cardRefs.current[index].swipe("left");
+    }
   };
 
   const swipeRight = (index) => {
-    cardRefs.current[index].swipe("right");
+    if (swipeFailed) {
+      toast.error("You have run out of likes for the day");
+    } else {
+      cardRefs.current[index].swipe("right");
+    }
   };
 
   async function swipeUser(toUserId, swipeType) {
-    await api.post("/swipe/v1/swipe", { toUserId, swipeType });
-    fetchUserLiked();
+    try {
+      const res = await api.post("/swipe/v1/swipe", {
+        toUserId,
+        swipeType,
+      });
+      if (res.data && res.data.message === "Failed") {
+        toast.error(res.data.data);
+        setSwipeFailed(true); // Set swipeFailed to true if swipe failed
+        return false; // Indicate failure
+      } else {
+        fetchUserLiked();
+        setSwipeFailed(false); // Reset swipeFailed if swipe succeeds
+        return true; // Indicate success
+      }
+    } catch (e) {
+      const errorMessage = e.response?.data || "An unexpected error occurred";
+      toast.error(errorMessage);
+      console.log(errorMessage);
+      setSwipeFailed(true);
+      return false; // Indicate failure
+    }
   }
 
   async function fetchUserLiked() {
@@ -179,62 +210,42 @@ function Matching() {
       </div>
     );
   };
-  const mockChats = [
-    {
-      id: 1,
-      sender: "Khải",
-      lastMessage: "Hello! How are you?",
-      photo:
-        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/3528382f6a66d2388b774.jpg?alt=media&token=17a36a25-e809-4075-94fa-c7e60b67d9c2",
-      messages: [
-        { sender: "Khải", message: "Hello! How are you?" },
-        { sender: "You", message: "I am good, thanks!" },
-      ],
-    },
-    {
-      id: 2,
-      sender: "Linh",
-      lastMessage: "Are you coming to the game?",
-      photo:
-        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/a17ce0c7c88f70d1299e11.jpg?alt=media&token=1cfde36f-dc61-43e5-8d2a-beeab89abb43",
-      messages: [
-        { sender: "Linh", message: "Are you coming to the game?" },
-        { sender: "You", message: "Yes, I will be there!" },
-      ],
-    },
-    {
-      id: 3,
-      sender: "Tiến",
-      lastMessage: "Let’s meet up!",
-      photo:
-        "https://firebasestorage.googleapis.com/v0/b/shuttlesmash-23032.appspot.com/o/_MG_8550-2.jpg?alt=media&token=d7577b2c-ad4c-4b3f-83e4-fa7edb6136f1",
-      messages: [
-        { sender: "Tiến", message: "Let’s meet up!" },
-        { sender: "You", message: "Sure, when?" },
-      ],
-    },
-  ];
-
+  console.log(userProfile);
+  const [userName, setUserName] = useState("");
+  const [userPhoto, setUserPhoto] = useState("");
   const ChatBox = ({ chat, onClick }) => {
-    const user = useSelector((store) => store.userLogin);
-    const getLablename = () => {
-      return chat?.users?.filter((item) => item?.id == user?.userId)[0]
-        .fullName;
+    // Lấy tên người dùng đầu tiên
+    const getFirstUserName = () => {
+      const otherUser = chat?.users?.find((user) => user.id !== userProfile.id);
+      if (otherUser) {
+        setUserName(otherUser.fullName);
+      }
+      return otherUser?.fullName || "Unknown User";
     };
+    const getFirstUserPhoto = () => {
+      const otherUser = chat?.users?.find((user) => user.id !== userProfile.id);
+      if (otherUser) {
+        setUserPhoto(otherUser.userPhotos?.[0]?.photoUrl || "");
+      }
+      return otherUser?.userPhotos?.[0]?.photoUrl || "";
+    };
+
     return (
       <div
         className="border-b border-gray-300 p-4 cursor-pointer hover:bg-green-100 transition duration-200 flex items-center rounded-lg shadow-sm"
         onClick={onClick}
       >
-        {chat.photo && (
+        {getFirstUserPhoto() && (
           <img
-            src={chat.photo}
-            alt={chat.sender}
+            src={getFirstUserPhoto()}
+            alt={getFirstUserName()}
             className="w-16 h-16 rounded-full border-2 border-green-500 mr-4 object-cover"
           />
         )}
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">{getLablename()}</span>
+          <span className="font-semibold text-gray-800">
+            {getFirstUserName()}
+          </span>
           <span className="text-gray-500 text-sm truncate">
             {chat.lastMessage}
           </span>
@@ -265,10 +276,13 @@ function Matching() {
 
   const [room, setRoom] = useState([]);
 
+  const [userChat, setUserChat] = useState([]);
+
   const fetchRoom = async () => {
     try {
       const response = await api.get("chat");
       setRoom(response.data);
+      console.log(response.data?.[0].users);
     } catch (error) {
       console.log(error);
     }
@@ -315,6 +329,45 @@ function Matching() {
   const getOtherUserNames = (data) => {
     return data?.user.id == user?.userId ? "YOU" : data?.user?.fullName;
   };
+
+  const MessageHeader = ({ selectedChat, userProfile, setSelectedChat }) => {
+    const [userName, setUserName] = useState("Unknown User");
+    const [userPhoto, setUserPhoto] = useState("");
+
+    useEffect(() => {
+      const otherUser = selectedChat?.users?.find(
+        (user) => user.id !== userProfile.id
+      );
+      if (otherUser) {
+        setUserName(otherUser.fullName);
+        setUserPhoto(otherUser.userPhotos?.[0]?.photoUrl || "");
+      }
+    }, [selectedChat, userProfile]);
+
+    return (
+      <div className="flex items-center justify-between p-4 bg-white shadow-md rounded-lg">
+        <div className="flex items-center">
+          {userPhoto && (
+            <img
+              src={userPhoto}
+              alt={userName}
+              className="w-12 h-12 rounded-full border-2 border-green-500 mr-3 object-cover"
+            />
+          )}
+          <h3 className="font-bold text-lg text-gray-800">{userName}</h3>
+        </div>
+        <button
+          className="text-sm text-blue-500 hover:text-blue-700 transition"
+          onClick={() => {
+            setSelectedChat(null);
+          }}
+        >
+          Back to Chats
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-screen overflow-x-hidden">
       <div className="w-2/6 bg-gray-100 flex flex-col">
@@ -376,7 +429,7 @@ function Matching() {
                   navigate(`/membership`);
                 }}
               ></i>
-              <p className="text-xs">Buy Now</p>
+              <p className="text-xs text-gray-600">Buy Now</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <i
@@ -385,7 +438,7 @@ function Matching() {
                   navigate(`/profile`);
                 }}
               ></i>
-              <p className="text-xs">Profile</p>
+              <p className="text-xs text-gray-600">Profile</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <i
@@ -394,7 +447,7 @@ function Matching() {
                   dispatch(clear()), navigate("/home");
                 }}
               ></i>
-              <p className="text-xs">SignOut</p>
+              <p className="text-xs text-gray-600">SignOut</p>
             </div>
           </div>
         </div>
@@ -442,7 +495,7 @@ function Matching() {
               </div>
               <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  showProfiles ? "max-h-[500px]" : "max-h-0"
+                  showProfiles ? "max-h-[500px] overflow-y-auto" : "max-h-0"
                 }`}
               >
                 <div className="overflow-y-auto mx-auto p-2 border rounded-lg shadow-lg">
@@ -484,56 +537,74 @@ function Matching() {
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-lg text-gray-700">
-                      {selectedChat.sender}'s Messages
-                    </h3>
+                <div>
+                  <div className="space-y-4">
+                    {/* <div className="flex items-center justify-between p-4 bg-white shadow-md rounded-lg">
+                    <div className="flex items-center">
+                      {userPhoto && (
+                        <img
+                          src={userPhoto}
+                          alt={userName}
+                          className="w-12 h-12 rounded-full border-2 border-green-500 mr-3 object-cover"
+                        />
+                      )}
+                      <h3 className="font-bold text-lg text-gray-800">
+                        {userName}
+                      </h3>
+                    </div>
                     <button
                       className="text-sm text-blue-500 hover:text-blue-700 transition"
-                      onClick={() => setSelectedChat(null)}
+                      onClick={() => {
+                        setSelectedChat(null);
+                      }}
                     >
                       Back to Chats
                     </button>
-                  </div>
-                  <div
-                    ref={chatContainerRef}
-                    className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
-                  >
-                    {selectedChat.messages.map((msg, index) => (
-                      <div
-                        key={index}
-                        className={`flex ${
-                          isSender(msg.user) ? "justify-end" : "justify-start"
-                        }`}
-                      >
-                        <span
-                          className={`inline-block px-4 py-2 rounded-lg text-sm shadow-sm ${
-                            msg.sender === "You"
-                              ? "bg-green-300 text-white"
-                              : "bg-gray-300 text-gray-800"
+                  </div> */}
+                    <MessageHeader
+                      selectedChat={selectedChat}
+                      userProfile={userProfile}
+                      setSelectedChat={setSelectedChat}
+                    />
+                    <div
+                      ref={chatContainerRef}
+                      className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
+                    >
+                      {selectedChat.messages.map((msg, index) => (
+                        <div
+                          key={index}
+                          className={`flex ${
+                            isSender(msg.user) ? "justify-end" : "justify-start"
                           }`}
                         >
-                          {getOtherUserNames(msg)}: {msg.message}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Ô nhập tin nhắn mới */}
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      className="border border-gray-300 rounded-full p-2 flex-grow shadow-sm focus:outline-none focus:ring focus:ring-green-200"
-                      placeholder="Type your message..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                    />
-                    <button
-                      className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition"
-                      onClick={handleSendMessage}
-                    >
-                      Send
-                    </button>
+                          <span
+                            className={`inline-block px-4 py-2 rounded-lg text-sm shadow-sm ${
+                              msg.sender === "You"
+                                ? "bg-green-300 text-white"
+                                : "bg-gray-300 text-gray-800"
+                            }`}
+                          >
+                            {getOtherUserNames(msg)}: {msg.message}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Ô nhập tin nhắn mới */}
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded-full p-2 flex-grow shadow-sm focus:outline-none focus:ring focus:ring-green-200 bg-transparent"
+                        placeholder="Type your message..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                      />
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition"
+                        onClick={handleSendMessage}
+                      >
+                        Send
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -560,7 +631,7 @@ function Matching() {
               <TinderCard
                 key={profile.id}
                 onSwipe={(dir) => onSwipe(dir, profile.fullName, profile.id)}
-                preventSwipe={["left", "right", "up", "down"]} // Ngăn swipe lên/xuống
+                preventSwipe={swipeFailed ? ["left", "right"] : []} // Ngăn swipe lên/xuống
                 className="absolute w-full h-full"
                 ref={(el) => (cardRefs.current[index] = el)}
               >
@@ -645,16 +716,16 @@ function Matching() {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-20 ">
                     <button
                       className="bg-red-500 text-white w-10 h-10 rounded-full shadow-lg"
                       onClick={() => swipeLeft(index)}
                     >
                       <i className="fas fa-times"></i>
                     </button>
-                    <button className="bg-blue-500 text-white w-10 h-10 rounded-full shadow-lg">
+                    {/* <button className="bg-blue-500 text-white w-10 h-10 rounded-full shadow-lg">
                       <i className="fas fa-star"></i>
-                    </button>
+                    </button> */}
                     <button
                       className="bg-green-500 text-white w-10 h-10 rounded-full shadow-lg"
                       onClick={() => swipeRight(index)}

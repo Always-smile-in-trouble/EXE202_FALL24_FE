@@ -175,7 +175,7 @@ const CreateAccount = () => {
                   </label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your first name..."
                     name="name"
                     value={userData.name}
@@ -187,7 +187,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="phone"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your telephone number...."
                     value={userData.phone}
                     onChange={handleInputChange}
@@ -199,7 +199,7 @@ const CreateAccount = () => {
                   <input
                     type="email"
                     name="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Examle@gmail.com..."
                     value={selectedEmail}
                   />
@@ -211,7 +211,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="occupation"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your occupation...."
                     value={userData.occupation}
                     onChange={handleInputChange}
@@ -224,7 +224,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="description"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="More about Yourself...."
                     value={userData.description}
                     onChange={handleInputChange}
@@ -237,7 +237,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="dob"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="YYYY-MM-DD"
                     value={userData.dob}
                     onChange={handleInputChange}
@@ -250,7 +250,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="location"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Your Address"
                     value={userData.location}
                     onChange={handleInputChange}
@@ -455,7 +455,10 @@ const CreateAccount = () => {
               </button>
             </div>
 
-            <p className="text-center text-blue-500 mt-9 cursor-pointer">
+            <p
+              className="text-center text-blue-500 mt-9 cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
               Already have an account? Log in.
             </p>
           </div>
