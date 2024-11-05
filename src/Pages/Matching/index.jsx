@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import TinderCard from "react-tinder-card";
 import { IoMdCheckmark, IoMdInformationCircle } from "react-icons/io";
 import { IoClose, IoFlag, IoShieldSharp } from "react-icons/io5";
@@ -48,6 +48,10 @@ function Matching() {
     setIsOpen(false);
   };
 
+  const handleCloseModal = () => {
+    setSelectedProfile(null);
+  };
+
   const onSwipe = async (direction, profileName, profileId) => {
     if (swipeFailed) {
       return toast.error("You have run out of likes for the day");
@@ -64,10 +68,8 @@ function Matching() {
         setCurrentIndex((prevIndex) => prevIndex + 1);
       }
     }
-
-    // Check if all users have been swiped
     if (currentIndex + 1 >= users.length) {
-      setAllSwiped(true); // Indicate that all users have been swiped
+      setAllSwiped(true);
     }
   };
 
@@ -99,8 +101,8 @@ function Matching() {
       });
       if (res.data && res.data.message === "Failed") {
         toast.error(res.data.data);
-        setSwipeFailed(true); // Set swipeFailed to true if swipe failed
-        return false; // Indicate failure
+        setSwipeFailed(true);
+        return false;
       } else {
         fetchUserLiked();
         setSwipeFailed(false); // Reset swipeFailed if swipe succeeds
@@ -331,18 +333,12 @@ function Matching() {
   };
 
   const MessageHeader = ({ selectedChat, userProfile, setSelectedChat }) => {
-    const [userName, setUserName] = useState("Unknown User");
-    const [userPhoto, setUserPhoto] = useState("");
-
-    useEffect(() => {
-      const otherUser = selectedChat?.users?.find(
-        (user) => user.id !== userProfile.id
-      );
-      if (otherUser) {
-        setUserName(otherUser.fullName);
-        setUserPhoto(otherUser.userPhotos?.[0]?.photoUrl || "");
-      }
+    const otherUser = useMemo(() => {
+      return selectedChat?.users?.find((user) => user.id !== userProfile.id);
     }, [selectedChat, userProfile]);
+
+    const userName = otherUser?.fullName || "Unknown User";
+    const userPhoto = otherUser?.userPhotos?.[0]?.photoUrl || "";
 
     return (
       <div className="flex items-center justify-between p-4 bg-white shadow-md rounded-lg">
@@ -463,7 +459,10 @@ function Matching() {
             Matches
           </button>
           <button
-            onClick={() => setCurrentTab("messages")}
+            onClick={() => {
+              setCurrentTab("messages");
+              fetchRoom();
+            }}
             className={`font-bold text-lg ${
               currentTab === "messages"
                 ? "text-green-500 border-b-2 border-green-600"
@@ -593,13 +592,14 @@ function Matching() {
                     <div className="flex items-center space-x-2">
                       <input
                         type="text"
-                        className="border border-gray-300 rounded-full p-2 flex-grow shadow-sm focus:outline-none focus:ring focus:ring-green-200 bg-transparent"
+                        className="border border-gray-300 rounded-full p-2 flex-grow shadow-sm focus:outline-none focus:ring focus:ring-green-200 bg-transparent overflow-hidden text-ellipsis"
                         placeholder="Type your message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
+                        style={{ maxWidth: "75%" }} // Giới hạn chiều rộng của input
                       />
                       <button
-                        className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition"
+                        className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition flex-shrink-0"
                         onClick={handleSendMessage}
                       >
                         Send
@@ -757,8 +757,22 @@ function Matching() {
               {selectedProfile.data.fullName}, {selectedProfile.data.age}
             </h2>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="flex flex-col">
+                <div className="mb-2">
+                  <strong className="text-gray-700">Description:</strong>{" "}
+                  {selectedProfile.data.description}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Location:</strong>{" "}
+                  {selectedProfile.data.location}
+                </div>
+                <div className="mb-2">
+                  <strong className="text-gray-700">Available Time:</strong>{" "}
+                  {selectedProfile.data.availableTime.join(", ")}
+                </div>
+              </div>
+              <div className="flex flex-col ml-14">
                 <div className="mb-2">
                   <strong className="text-gray-700">Occupation:</strong>{" "}
                   {selectedProfile.data.occupation}
@@ -770,24 +784,6 @@ function Matching() {
                 <div className="mb-2">
                   <strong className="text-gray-700">Level:</strong>{" "}
                   {selectedProfile.data.level}
-                </div>
-                <div className="mb-2">
-                  <strong className="text-gray-700">Available Time:</strong>{" "}
-                  {selectedProfile.data.availableTime.join(", ")}
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="mb-2">
-                  <strong className="text-gray-700">Date of Birth:</strong>{" "}
-                  {selectedProfile.data.dob.join("-")}
-                </div>
-                <div className="mb-2">
-                  <strong className="text-gray-700">Description:</strong>{" "}
-                  {selectedProfile.data.description}
-                </div>
-                <div className="mb-2">
-                  <strong className="text-gray-700">Location:</strong>{" "}
-                  {selectedProfile.data.location}
                 </div>
               </div>
             </div>
