@@ -11,6 +11,7 @@ import MemberShip from "../Pages/MemberShip";
 import PaymentStatus from "../Pages/PaymentReturn";
 import Dashboard from "../Pages/Dashboard/dashboard";
 import User from "../Pages/Dashboard/User/User";
+import MainPayment from "../Pages/Dashboard/MainPayment/MainPayment";
 // import { AnimatedModalDemo } from "../Pages/Matching/index2";
 
 const router = createBrowserRouter([
@@ -67,7 +68,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/payment",
-    element: <Dashboard />,
+    element: <MainPayment />,
   },
 ]);
 

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 import game from "../../../assets/logo/game.png";
-import { HiHome } from "react-icons/hi";
 import { LiaSignOutAltSolid } from "react-icons/lia";
 import { SidebarData } from "../Data";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
@@ -44,7 +43,13 @@ const Sidebar = () => {
         })}
 
         <div className="menuItem">
-          <div className="text-2xl">
+          <div
+            className="text-2xl"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
+          >
             <LiaSignOutAltSolid />
           </div>
         </div>
