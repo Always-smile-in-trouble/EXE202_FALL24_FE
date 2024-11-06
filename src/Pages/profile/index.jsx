@@ -18,14 +18,17 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const storage = getStorage();
 
+  // Open the modal to view the selected photo
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
   };
 
+  // Close the modal
   const closePhotoModal = () => {
     setSelectedPhoto(null);
   };
 
+  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -45,14 +48,17 @@ const UserProfile = () => {
     fetchUserData();
   }, []);
 
+  // Toggle edit mode
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
   };
 
+  // Handle input change for editable fields
   const handleInputChange = (field, value) => {
     setEditedUser({ ...editedUser, [field]: value });
   };
 
+  // Handle photo upload
   const handlePhotoUpload = async (event, index) => {
     const file = event.target.files[0];
     if (file) {
@@ -65,6 +71,7 @@ const UserProfile = () => {
     }
   };
 
+  // Handle photo delete
   const handlePhotoDelete = async (index) => {
     const photoUrl = editedUser.photos[index];
     const photoRef = ref(storage, photoUrl);
@@ -75,18 +82,19 @@ const UserProfile = () => {
     setEditedUser({ ...editedUser, photos: updatedPhotos });
   };
 
+  // Update profile information
   const handleUpdateProfile = async () => {
     try {
       await api.put("/user/v1/update", editedUser);
       setUser({ ...editedUser });
-      setIsEditing(false); // Tắt chế độ chỉnh sửa
+      setIsEditing(false); // Exit edit mode
       toast.success("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
     }
   };
 
-  // Show loading
+  // Show loading if user data is not yet loaded
   if (!user)
     return (
       <div className="flex items-center justify-center h-screen">
@@ -141,25 +149,39 @@ const UserProfile = () => {
 
       {/* Profile Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {["phone", "email", "dob", "gender", "location", "availableTime"].map(
-          (field) => (
-            <div key={field}>
-              <strong className="text-gray-600 capitalize">
-                {field.replace("_", " ")}:
-              </strong>{" "}
-              {isEditing ? (
-                <input
-                  type="text"
-                  className="border-b border-gray-400 focus:outline-none"
-                  value={editedUser[field] || ""}
-                  onChange={(e) => handleInputChange(field, e.target.value)}
-                />
-              ) : (
-                user[field]
-              )}
-            </div>
-          )
-        )}
+        {["phone", "email", "dob", "gender", "location"].map((field) => (
+          <div key={field}>
+            <strong className="text-gray-600 capitalize">
+              {field.replace("_", " ")}:
+            </strong>
+            {isEditing ? (
+              <input
+                type="text"
+                className="border-b border-gray-400 focus:outline-none"
+                value={editedUser[field] || ""}
+                onChange={(e) => handleInputChange(field, e.target.value)}
+              />
+            ) : (
+              user[field]
+            )}
+          </div>
+        ))}
+        <div>
+          <strong className="text-gray-600 capitalize">Available Time:</strong>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {Array.isArray(editedUser.availableTime) &&
+              editedUser.availableTime.map((time, index) => (
+                <div
+                  key={index}
+                  className="flex items-center bg-gray-200 text-gray-700 border rounded-lg px-3 py-1"
+                >
+                  <i className="fa-solid fa-clock mr-2"></i>{" "}
+                  {/* Use any icon here */}
+                  {time}
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
 
       {/* About Section */}
@@ -184,6 +206,7 @@ const UserProfile = () => {
             <div
               key={index}
               className="relative w-full h-32 bg-gray-200 border rounded-lg flex items-center justify-center overflow-hidden cursor-pointer"
+              onClick={() => openPhotoModal(editedUser.photos[index])} // Open the photo modal
             >
               {editedUser.photos[index] ? (
                 <img
@@ -214,6 +237,7 @@ const UserProfile = () => {
         </div>
       </div>
 
+      {/* Modal for selected photo */}
       {selectedPhoto && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
@@ -226,10 +250,10 @@ const UserProfile = () => {
             <img
               src={selectedPhoto}
               alt="Selected"
-              className="w-full h-auto rounded-lg"
+              className="w-[500px] h-auto rounded-lg mx-auto"
             />
             <button
-              className="absolute top-2 right-2 bg-white p-2 rounded-full"
+              className="absolute top-2 right-2 bg-red-500 px-4 py-2 rounded-full"
               onClick={closePhotoModal}
             >
               &times;
