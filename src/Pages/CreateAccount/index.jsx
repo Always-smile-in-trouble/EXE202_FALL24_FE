@@ -78,7 +78,7 @@ const CreateAccount = () => {
       navigate("/login");
     } catch (error) {
       console.log(error);
-      toast.error("Registration failed. Please try again.");
+      toast.error(error.response.data.message);
     }
   };
 
