@@ -14,7 +14,10 @@ export const userLoginSlice = createSlice({
       state.accessToken = actions.payload.accessToken;
       return state;
     },
+    logout: () => {
+      return null;
+    },
   },
 });
 
-export const { login } = userLoginSlice.actions;
+export const { login, logout } = userLoginSlice.actions;

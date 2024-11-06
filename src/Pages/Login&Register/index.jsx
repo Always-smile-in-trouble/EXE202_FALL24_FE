@@ -82,7 +82,12 @@ const Index = () => {
       localStorage.setItem("token", res.data.data.accessToken);
       localStorage.setItem("userId", res.data.data.userId);
       dispatch(login(res.data.data));
-      navigate("/matching");
+
+      if (res.data.data.role.includes("ADMIN")) {
+        navigate("/dashboard");
+      } else if (res.data.data.role.includes("USER")) {
+        navigate("/matching");
+      }
     } catch (e) {
       toast.error(e.response.data.message);
     }

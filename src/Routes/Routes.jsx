@@ -14,6 +14,7 @@ import User from "../Pages/Dashboard/User/User";
 import MainPayment from "../Pages/Dashboard/MainPayment/MainPayment";
 import UserProfile from "../Pages/profile";
 import TransactionHistory from "../Pages/Transactions";
+import { ValidRouteAdmin } from "./ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
@@ -71,11 +72,11 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <Navigate to="/" replace />, // Chuyển hướng bất kỳ đường dẫn nào không xác định về LoadingPage
+    element: <Navigate to="/" replace />,
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <ValidRouteAdmin element={<Dashboard />} />,
   },
   {
     path: "/user",

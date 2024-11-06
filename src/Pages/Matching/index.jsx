@@ -16,6 +16,7 @@ import logo from "../../assets/logo/badminton.png";
 import badmintonImage from "../../assets/logo/14.webp";
 import badmintonWait from "../../assets/logo/11.webp";
 import useRealtime from "../../Hooks/useRealTime";
+import { logout } from "../../redux/features/userLoginSlice";
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -440,7 +441,7 @@ function Matching() {
               <i
                 className="fas fa-sign-out-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
                 onClick={() => {
-                  dispatch(clear()), navigate("/home");
+                  dispatch(clear()), navigate("/home"), dispatch(logout());
                 }}
               ></i>
               <p className="text-xs text-gray-600">SignOut</p>
