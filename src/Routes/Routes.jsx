@@ -12,7 +12,8 @@ import PaymentStatus from "../Pages/PaymentReturn";
 import Dashboard from "../Pages/Dashboard/dashboard";
 import User from "../Pages/Dashboard/User/User";
 import MainPayment from "../Pages/Dashboard/MainPayment/MainPayment";
-// import { AnimatedModalDemo } from "../Pages/Matching/index2";
+import UserProfile from "../Pages/profile";
+import TransactionHistory from "../Pages/Transactions";
 
 const router = createBrowserRouter([
   {
@@ -37,10 +38,24 @@ const router = createBrowserRouter([
   {
     path: "/matching",
     element: <Matching />,
+    children: [
+      {
+        path: "/matching:id",
+        element: <Matching />,
+      },
+    ],
   },
   {
     path: "/createaccount",
     element: <CreateAccount />,
+  },
+  {
+    path: "/profile",
+    element: <UserProfile />,
+  },
+  {
+    path: "/history",
+    element: <TransactionHistory />,
   },
   {
     path: "/navbar2",

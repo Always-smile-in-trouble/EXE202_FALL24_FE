@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import api from "../../config/axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
 import { login, userLoginSlice } from "../../redux/features/userLoginSlice";
@@ -15,6 +15,9 @@ const Index = () => {
   const [emailLogin, setEmailLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,10 +36,31 @@ const Index = () => {
     setIsSignUpMode(false);
   };
 
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])/;
+    const isValid = passwordRegex.test(value);
+    setIsPasswordValid(isValid);
+    setPasswordError(
+      isValid
+        ? ""
+        : "Password must contain at least one uppercase letter and one special character."
+    );
+  };
+
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
+
+    if (!email || !password || !confirmPassword) {
+      toast.error("Please fill in all information!");
+      return;
+    }
+
     if (password !== confirmPassword) {
-      toast.error("Password is not match!");
+      toast.error("Password not match!");
+    } else if (!isPasswordValid) {
+      toast.error(passwordError);
     } else {
       dispatch(register({ email: email, password: password }));
       setEmail("");
@@ -56,12 +80,20 @@ const Index = () => {
       toast.success("Đăng nhập thành công!");
       console.log(res.data.data);
       localStorage.setItem("token", res.data.data.accessToken);
+      localStorage.setItem("userId", res.data.data.userId);
       dispatch(login(res.data.data));
       navigate("/matching");
     } catch (e) {
-      toast.error(e.response.message);
+      toast.error(e.response.data.message);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/matching"); // Nếu có token, điều hướng đến trang matching
+    }
+  }, [navigate]);
 
   return (
     <div className={`auth-container ${isSignUpMode ? "sign-up-mode" : ""}`}>
@@ -146,7 +178,7 @@ const Index = () => {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
             </div>
             <div className="auth-input-field">

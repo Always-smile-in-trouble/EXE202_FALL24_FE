@@ -4,6 +4,7 @@ import { Button, message } from "antd";
 import { LiaFacebookMessenger } from "react-icons/lia";
 import { useParams } from "react-router-dom";
 import { useStateValue } from "../../Context/StateProvider";
+import RoomChatDetail from "../roomChatDetail/RoomChatDetail";
 
 function ChatDetail() {
   const { setShowSearchFriends, theme, realtime } = useStateValue();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import logo from "../../assets/logo/game.png";
 import api from "../../config/axios";
@@ -9,14 +9,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button, Image, Upload } from "antd";
 import "./index.scss";
 import uploadFile from "../../config/upload";
-// const getBase64 = (file) =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = (error) => reject(error);
-//   });
-
+import { useNavigate } from "react-router-dom";
 const CreateAccount = () => {
   // State để quản lý việc hiển thị form và lưu trữ thông tin
   const [gender, setGender] = useState("");
@@ -27,6 +20,7 @@ const CreateAccount = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
     email: selectedEmail,
@@ -56,14 +50,12 @@ const CreateAccount = () => {
     setUserData((prevUserData) => ({ ...prevUserData, [name]: value }));
   };
   const handleTimeSelection = (time) => {
-    if (times.includes(time)) {
-      // If the time is already selected, remove it from the array
-      setTimes(times.filter((t) => t !== time));
-    } else {
-      // If the time is not selected, add it to the array
-      setTimes([...times, time]);
-      setUserData({ ...userData, availableTime: times });
-    }
+    const updatedTimes = times.includes(time)
+      ? times.filter((t) => t !== time) // Remove if already selected
+      : [...times, time]; // Add if not selected
+
+    setTimes(updatedTimes);
+    setUserData((prevData) => ({ ...prevData, availableTime: updatedTimes }));
   };
 
   const registerUser = async (e) => {
@@ -73,16 +65,20 @@ const CreateAccount = () => {
       return;
     }
     try {
-      if (fileList.length > 0) {
-        const uploadedUrls = await Promise.all(
-          fileList.map((file) => uploadFile(file.originFileObj))
-        );
-        setUserData({ ...userData, photo: uploadedUrls });
-      }
-      const response = await api.post("/user/v1/register", userData);
+      const uploadedUrls = await Promise.all(
+        fileList.map((file) => uploadFile(file.originFileObj))
+      );
+
+      const updatedUserData = { ...userData, photo: uploadedUrls };
+      setUserData(updatedUserData);
+
+      const response = await api.post("/user/v1/register", updatedUserData);
       console.log(response.data);
+      toast.success("Registration successful!");
+      navigate("/login");
     } catch (error) {
       console.log(error);
+      toast.error("Registration failed. Please try again.");
     }
   };
 
@@ -100,20 +96,17 @@ const CreateAccount = () => {
     });
 
   const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    try {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      setPreviewImage(file.url || file.preview);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error("Image preview failed: ", error);
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
   };
-  // const handleChange = ({ fileList: newFileList }) => {
-  //   setFileList(newFileList);
-  //   // setUserData({ ...userData, photo: fileList.map((file) => file.uid) });
-  //   const updatedPhotos = newFileList.map((file) => ({
-  //     url: file.url || file.preview, // Use the URL if available or the base64 data URL
-  //   }));
-  //   setUserData({ ...userData, photo: updatedPhotos });
-  // };
+
   const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
     const updatedPhotos = newFileList
@@ -149,6 +142,13 @@ const CreateAccount = () => {
     </button>
   );
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/matching"); // Nếu có token, điều hướng đến trang matching
+    }
+  }, [navigate]);
+
   return (
     <div className="relative z-50">
       {showFormRule && <FormRule onAgree={handleAgree} />}
@@ -175,7 +175,7 @@ const CreateAccount = () => {
                   </label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your first name..."
                     name="name"
                     value={userData.name}
@@ -187,7 +187,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="phone"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your telephone number...."
                     value={userData.phone}
                     onChange={handleInputChange}
@@ -199,7 +199,7 @@ const CreateAccount = () => {
                   <input
                     type="email"
                     name="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Examle@gmail.com..."
                     value={selectedEmail}
                   />
@@ -211,7 +211,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="occupation"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Input your occupation...."
                     value={userData.occupation}
                     onChange={handleInputChange}
@@ -224,7 +224,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="description"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="More about Yourself...."
                     value={userData.description}
                     onChange={handleInputChange}
@@ -237,7 +237,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="dob"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="YYYY-MM-DD"
                     value={userData.dob}
                     onChange={handleInputChange}
@@ -250,7 +250,7 @@ const CreateAccount = () => {
                   <input
                     type="text"
                     name="location"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mt-2 bg-transparent"
                     placeholder="Your Address"
                     value={userData.location}
                     onChange={handleInputChange}
@@ -267,23 +267,23 @@ const CreateAccount = () => {
                       type="button"
                       name="gender"
                       className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
-                        gender === "Man" ? "border-green-400 bg-green-100" : ""
+                        gender === "MALE" ? "border-green-400 bg-green-100" : ""
                       }`}
-                      onClick={() => handleGenderSelection("Man")}
+                      onClick={() => handleGenderSelection("MALE")}
                     >
-                      Man
+                      Male
                     </button>
                     <button
                       type="button"
                       name="gender"
                       className={`flex-1 py-2 border border-gray-300 rounded-full text-center focus:outline-none hover:border-green-400 ${
-                        gender === "Woman"
+                        gender === "FEMALE"
                           ? "border-green-400 bg-green-100"
                           : ""
                       }`}
-                      onClick={() => handleGenderSelection("Woman")}
+                      onClick={() => handleGenderSelection("FEMALE")}
                     >
-                      Woman
+                      Female
                     </button>
                   </div>
                   <div className="mt-1">
@@ -455,7 +455,10 @@ const CreateAccount = () => {
               </button>
             </div>
 
-            <p className="text-center text-blue-500 mt-9 cursor-pointer">
+            <p
+              className="text-center text-blue-500 mt-9 cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
               Already have an account? Log in.
             </p>
           </div>
