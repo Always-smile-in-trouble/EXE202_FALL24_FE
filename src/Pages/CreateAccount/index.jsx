@@ -281,7 +281,7 @@ const CreateAccount = () => {
                           ? "border-green-400 bg-green-100"
                           : ""
                       }`}
-                      onClick={() => handleGenderSelection("Woman")}
+                      onClick={() => handleGenderSelection("FEMALE")}
                     >
                       Female
                     </button>

@@ -15,6 +15,8 @@ const Index = () => {
   const [emailLogin, setEmailLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,16 +36,31 @@ const Index = () => {
     setIsSignUpMode(false);
   };
 
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])/;
+    const isValid = passwordRegex.test(value);
+    setIsPasswordValid(isValid);
+    setPasswordError(
+      isValid
+        ? ""
+        : "Password must contain at least one uppercase letter and one special character."
+    );
+  };
+
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
 
     if (!email || !password || !confirmPassword) {
-      toast.error("Vui lòng nhập đầy đủ thông tin!");
+      toast.error("Please fill in all information!");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Mật khẩu không khớp!");
+      toast.error("Password not match!");
+    } else if (!isPasswordValid) {
+      toast.error(passwordError);
     } else {
       dispatch(register({ email: email, password: password }));
       setEmail("");
@@ -161,7 +178,7 @@ const Index = () => {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
             </div>
             <div className="auth-input-field">
