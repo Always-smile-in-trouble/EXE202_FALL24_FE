@@ -1,55 +1,49 @@
 import { Table, Tag } from "antd";
 import React, { useEffect, useState } from "react";
-import { render } from "react-dom";
 import api from "../../../config/axios";
 import formatCurrency from "../formatCurrency";
 
 const Payment = () => {
-  const [user, setUser] = useState([]);
   const [pay, setPay] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState({
+    current: 1, // Trang hiện tại mặc định là 1
+    pageSize: 5, // Số bản ghi mỗi trang
+    total: 0, // Tổng số bản ghi
+  });
 
-  // const fetchPayment = async () => {
-  // const response = await api.get(`/admin/v1/getAllPayment`);
-  //   console.log(response.data.data.transactionResponseList);
-  //   setPay(response.data.data.transactionResponseList);
-  // };
-
-  async function fetchPayment(pageNumber = 0, pageSize = 10) {
+  // Fetch payment with pagination
+  async function fetchPayment(pageNumber = 1, pageSize = 5) {
     try {
       const response = await api.get(
-        `/admin/v1/getAllPayment?page=${pageNumber}&size=${pageSize}`
+        `/admin/v1/getAllPayment?page=${pageNumber - 1}&size=${pageSize}`
       );
-      // setDatasource(response.data.data);
+      setPay(response.data.data.transactionResponseList); // Dữ liệu giao dịch
       setPagination({
-        ...pagination,
-        total: response.data.data.transactionResponseList,
-        // pageSize: response.data.pageSize,
-        // current: pageNumber,
+        current: pageNumber,
+        pageSize: pageSize,
+        total: response.data.data.totalCompleted, // Tổng số giao dịch từ API
       });
-      setPay(response.data.data.transactionResponseList);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const fetchUser = async (id) => {
-    const response = await api.get(`/user/v1/getInfo/${id}`);
-    return response.data.data.fullName;
-  };
-
+  // Fetch data on mount
   useEffect(() => {
-    fetchPayment();
+    fetchPayment(1, 5); // Lấy dữ liệu khi component mount
   }, []);
 
+  // Handle page change
+  const handleTableChange = (pagination) => {
+    fetchPayment(pagination.current, pagination.pageSize); // Khi chuyển trang, gọi lại fetchPayment
+  };
+
+  // Columns for the table
   const columns = [
     {
       title: "Name",
       dataIndex: "userName",
       key: "userName",
-      // render: (record) => {
-      //   return <p>{render}</p>;
-      // },
     },
     {
       title: "Transaction",
@@ -98,10 +92,11 @@ const Payment = () => {
     },
   ];
 
+  // Function to convert array to date string "YYYY-MM-DD"
   const convertArrayToDate = (arr) => {
-    const [year, month, day] = arr; // Destructure year, month, and day
-    const dateObject = new Date(year, month - 1, day); // Month is zero-based
-    return dateObject.toISOString().split("T")[0]; // Format as "YYYY-MM-DD"
+    const [year, month, day] = arr;
+    const dateObject = new Date(year, month - 1, day);
+    return dateObject.toISOString().split("T")[0]; // Định dạng ngày "YYYY-MM-DD"
   };
 
   return (
@@ -113,9 +108,16 @@ const Payment = () => {
         scroll={{
           y: 55 * 7,
         }}
-        className="w-11/12 ml-8 "
-        pagination={pagination}
-      ></Table>
+        className="w-11/12 ml-8"
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          onChange: (page, pageSize) => fetchPayment(page, pageSize),
+          showSizeChanger: false,
+        }}
+        onChange={handleTableChange}
+      />
     </div>
   );
 };

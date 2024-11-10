@@ -14,13 +14,6 @@ function createData(name, trackingId, date, status) {
   return { name, trackingId, date, status };
 }
 
-const rows = [
-  createData("Bình Minh", 18908424, "2 March 2022", "Premium"),
-  createData("Thanh Trúc", 18908424, "2 March 2022", "Standard"),
-  createData("Đan Trường", 18908424, "2 March 2022", "Expired"),
-  createData("Lê Thanh", 18908421, "2 March 2022", "Pending"),
-];
-
 const makeStyle = (status) => {
   if (status === "COMPLETED") {
     return {
@@ -49,25 +42,12 @@ export default function BasicTable() {
   const [orders, setOrder] = useState([]);
   const [pagination, setPagination] = useState({});
 
-  // const fetchData = async () => {
-  //   const response = await api.get("/admin/v1/getAllPayment");
-
-  //   const sortData = response.data.data.transactionResponseList
-  //     .sort(
-  //       (a, b) =>
-  //         new Date(convertArrayToDate(b.transactionDate)) -
-  //         new Date(convertArrayToDate(a.transactionDate))
-  //     )
-  //     .slice(-5);
-  //   console.log(sortData);
-  //   setOrder(sortData);
-  // };
-
   async function fetchData(pageNumber = 0, pageSize = 10) {
     try {
       const response = await api.get(
         `/admin/v1/getAllPayment?page=${pageNumber}&size=${pageSize}`
       );
+      console.log(response.data.data);
       setOrder(response.data.data.transactionResponseList);
       setPagination({
         ...pagination,

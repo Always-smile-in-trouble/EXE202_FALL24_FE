@@ -11,12 +11,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clear } from "../../redux/features/userSlice";
 import { FaLocationDot } from "react-icons/fa6";
-import { MdOutlineLocationOn } from "react-icons/md";
+import { MdAccessTime, MdOutlineLocationOn } from "react-icons/md";
 import logo from "../../assets/logo/badminton.png";
 import badmintonImage from "../../assets/logo/14.webp";
 import badmintonWait from "../../assets/logo/11.webp";
 import useRealtime from "../../Hooks/useRealTime";
 import { logout } from "../../redux/features/userLoginSlice";
+import badminton2 from "../../assets/logo/racket.png";
 function Matching() {
   const [currentTab, setCurrentTab] = useState("matches");
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -35,6 +36,8 @@ function Matching() {
   const [showProfiles, setShowProfiles] = useState(false);
   const [allSwiped, setAllSwiped] = useState(false);
   const [swipeFailed, setSwipeFailed] = useState(false);
+
+  console.log(userProfile);
 
   const handleShowProfiles = () => {
     setShowProfiles(!showProfiles);
@@ -167,7 +170,7 @@ function Matching() {
 
   const UserProfile = ({ user }) => {
     return (
-      <div className="mt-2 border-2 border-gray-300 rounded-lg p-4">
+      <div className="mt-2 border-2 border-gray-300 rounded-lg p-4 max-h-[400px] overflow-y-auto">
         <div className="flex justify-between items-center">
           <div className="flex items-center mb-2">
             {user.photos?.[0] && (
@@ -178,20 +181,30 @@ function Matching() {
               />
             )}
             <div>
-              <h3 className="font-bold">{user.fullName}</h3>
-              <p className="text-sm">About: {user.description}</p>
-              <div className="flex gap-1">
-                <MdOutlineLocationOn />
+              <h3 className="font-bold text-black">{user.fullName}</h3>
+              <div className="flex gap-1 items-center">
+                <MdOutlineLocationOn className="text-green-400" />
                 <p className="text-xs text-gray-500">{user.location}</p>
               </div>
-              <p className="text-xs text-gray-500">Age: {user.age}</p>
-              <p className="text-xs text-gray-500">Level: {user.level}</p>
               <p className="text-xs text-gray-500">
-                Available: {user.availableTime.join(", ")}
+                <span className="font-bold">Age:</span> {user.age}
+              </p>
+              <p className="text-xs text-gray-500">
+                <span className="font-bold">Level:</span> {user.level}
+              </p>
+              <p className="text-xs text-gray-500">
+                <span className="font-bold">Available:</span>
+                <div className="flex flex-col gap-1 mt-1">
+                  {user.availableTime.map((time, index) => (
+                    <span key={index} className="flex items-center gap-1">
+                      <MdAccessTime className="text-gray-500" /> {time}
+                    </span>
+                  ))}
+                </div>
               </p>
             </div>
           </div>
-          <div className="flex gap-12 mr-5">
+          <div className="flex gap-12 mr-2">
             <div
               className="bg-green-500 text-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 hover:bg-green-600 hover:scale-105 shadow-md"
               onClick={() => {
@@ -329,8 +342,16 @@ function Matching() {
   }, []);
 
   const user = useSelector((store) => store.userLogin);
+  console.log(selectedChat);
   const getOtherUserNames = (data) => {
     return data?.user.id == user?.userId ? "YOU" : data?.user?.fullName;
+  };
+
+  const getOtherUserPhoto = (data) => {
+    if (data?.user.id !== user?.userId) {
+      return data?.user?.userPhotos[0].photoUrl;
+    }
+    return null;
   };
 
   const MessageHeader = ({ selectedChat, userProfile, setSelectedChat }) => {
@@ -364,6 +385,10 @@ function Matching() {
       </div>
     );
   };
+
+  const [isFirstMessage, setIsFirstMessage] = useState(true);
+
+  console.log(selectedChat);
 
   return (
     <div className="flex h-screen overflow-x-hidden">
@@ -498,7 +523,7 @@ function Matching() {
                   showProfiles ? "max-h-[500px] overflow-y-auto" : "max-h-0"
                 }`}
               >
-                <div className="overflow-y-auto mx-auto p-2 border rounded-lg shadow-lg">
+                <div className="overflow-y-auto mx-auto p-2 border rounded-lg shadow-lg max-h-[60vh]">
                   {matchesData.length > 0 ? (
                     matchesData.map((user) => (
                       <UserProfile key={user.id} user={user} />
@@ -539,28 +564,6 @@ function Matching() {
               ) : (
                 <div>
                   <div className="space-y-4">
-                    {/* <div className="flex items-center justify-between p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex items-center">
-                      {userPhoto && (
-                        <img
-                          src={userPhoto}
-                          alt={userName}
-                          className="w-12 h-12 rounded-full border-2 border-green-500 mr-3 object-cover"
-                        />
-                      )}
-                      <h3 className="font-bold text-lg text-gray-800">
-                        {userName}
-                      </h3>
-                    </div>
-                    <button
-                      className="text-sm text-blue-500 hover:text-blue-700 transition"
-                      onClick={() => {
-                        setSelectedChat(null);
-                      }}
-                    >
-                      Back to Chats
-                    </button>
-                  </div> */}
                     <MessageHeader
                       selectedChat={selectedChat}
                       userProfile={userProfile}
@@ -568,8 +571,50 @@ function Matching() {
                     />
                     <div
                       ref={chatContainerRef}
-                      className="max-h-60 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
+                      className="max-h-80 overflow-y-auto bg-gray-100 p-2 rounded-lg shadow-inner space-y-2"
                     >
+                      {isFirstMessage && (
+                        <div className="text-center text-lg text-gray-500 italic py-4">
+                          {/* Logo image */}
+                          <div className="flex justify-center mb-2 ml-3">
+                            <img
+                              src={badminton2}
+                              alt="Top Image"
+                              className="w-10 h-10 relative -top-2 z-10"
+                            />
+                          </div>
+
+                          <div className="relative flex justify-center items-center gap-2">
+                            {/* Friend's image (left) */}
+                            {selectedChat.users.map((userData) => {
+                              if (userData.id !== user.userId) {
+                                return (
+                                  <img
+                                    key={userData.id}
+                                    src={getOtherUserPhoto({ user: userData })}
+                                    alt="Other User Avatar"
+                                    className="w-14 h-14 rounded-full object-cover border-2 border-green-500"
+                                  />
+                                );
+                              }
+                              return null;
+                            })}
+
+                            <img
+                              src={userProfile.photos?.[0]}
+                              alt="Your Avatar"
+                              className="-ml-5 w-14 h-14 rounded-full object-cover border-2 border-blue-500"
+                            />
+                          </div>
+
+                          <span className="block text-center text-sm text-gray-600 mt-2">
+                            You two are connected!
+                          </span>
+                          <span>Welcome! Let's start the conversation.</span>
+                        </div>
+                      )}
+
+                      {/* Render the chat messages */}
                       {selectedChat.messages.map((msg, index) => (
                         <div
                           key={index}
@@ -577,6 +622,14 @@ function Matching() {
                             isSender(msg.user) ? "justify-end" : "justify-start"
                           }`}
                         >
+                          {/* Show sender's avatar if it's not the sender */}
+                          {!isSender(msg.user) && (
+                            <img
+                              src={getOtherUserPhoto(msg)} // Get the other user's photo
+                              alt="User Avatar"
+                              className="w-10 h-10 rounded-full mr-3 object-cover"
+                            />
+                          )}
                           <span
                             className={`inline-block px-4 py-2 rounded-lg text-sm shadow-sm ${
                               msg.sender === "You"
@@ -584,12 +637,12 @@ function Matching() {
                                 : "bg-gray-300 text-gray-800"
                             }`}
                           >
-                            {getOtherUserNames(msg)}: {msg.message}
+                            {msg.message}
                           </span>
                         </div>
                       ))}
                     </div>
-                    {/* Ô nhập tin nhắn mới */}
+                    {/* Input for the new message */}
                     <div className="flex items-center space-x-2">
                       <input
                         type="text"
@@ -597,7 +650,8 @@ function Matching() {
                         placeholder="Type your message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        style={{ maxWidth: "75%" }} // Giới hạn chiều rộng của input
+                        style={{ maxWidth: "75%" }} // Limit input width
+                        lang="vi"
                       />
                       <button
                         className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-full px-4 py-2 shadow-md transition flex-shrink-0"
@@ -616,7 +670,7 @@ function Matching() {
 
       <div className="w-3/4 flex justify-center items-center bg-gray-50">
         <div className="relative w-[380px] h-[620px]">
-          {allSwiped ? (
+          {users.length === 0 || allSwiped ? (
             <div className="flex flex-col justify-center items-center h-full opacity-75 transition-opacity duration-500">
               <img
                 src={badmintonWait}
@@ -676,7 +730,7 @@ function Matching() {
                       {isOpen && reportUserId === profile.id && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                           <div className="bg-white rounded-lg shadow-lg p-6 w-[350px] max-w-lg">
-                            <h2 className="text-2xl font-semibold text-center text-red-500 mb-6">
+                            <h2 className="text-2xl font-semibold text-center text-red-500 mb-6 bg-transparent">
                               Report {profile.fullName}
                             </h2>
                             <select
@@ -684,7 +738,7 @@ function Matching() {
                               onChange={(e) =>
                                 setSelectedReason(e.target.value)
                               }
-                              className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                              className="border border-gray-300 rounded-lg p-2 w-full mb-4 bg-transparent"
                             >
                               <option value="" disabled>
                                 Select a reason
@@ -697,7 +751,7 @@ function Matching() {
                             </select>
                             <div className="flex justify-between items-center">
                               <button
-                                className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                                className="text-gray-500 hover:text-white hover:bg-blue-500 px-6 py-2 border border-gray-300 rounded-full transition duration-200 bg-transparent"
                                 onClick={() =>
                                   reportUser(profile.id, selectedReason)
                                 } // Bọc hàm trong arrow function
@@ -706,7 +760,7 @@ function Matching() {
                               </button>
                               <button
                                 onClick={closeModal}
-                                className="text-gray-500 hover:text-white hover:bg-black px-6 py-2 border border-gray-300 rounded-full transition duration-200"
+                                className="text-gray-500 hover:text-white hover:bg-black px-6 py-2 border border-gray-300 rounded-full transition duration-200 bg-transparent"
                               >
                                 CANCEL
                               </button>
@@ -828,7 +882,7 @@ function Matching() {
             <img
               src={selectedImage}
               alt="Selected"
-              className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-lg"
+              className="w-[400px] h-auto object-contain rounded-lg shadow-lg"
             />
           </div>
         </div>

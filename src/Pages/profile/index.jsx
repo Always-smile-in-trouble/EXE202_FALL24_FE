@@ -126,7 +126,7 @@ const UserProfile = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <input
                 type="file"
-                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer bg-transparent"
                 onChange={(e) => handlePhotoUpload(e, 0)}
               />
             </div>
@@ -157,7 +157,7 @@ const UserProfile = () => {
             {isEditing ? (
               <input
                 type="text"
-                className="border-b border-gray-400 focus:outline-none"
+                className="border-b border-gray-400 focus:outline-none bg-transparent"
                 value={editedUser[field] || ""}
                 onChange={(e) => handleInputChange(field, e.target.value)}
               />
@@ -168,7 +168,7 @@ const UserProfile = () => {
         ))}
         <div>
           <strong className="text-gray-600 capitalize">Available Time:</strong>
-          <div className="flex flex-wrap gap-2 mt-2">
+          <div className="flex flex-wrap gap-2 mt-2 bg-transparent">
             {Array.isArray(editedUser.availableTime) &&
               editedUser.availableTime.map((time, index) => (
                 <div
@@ -189,7 +189,7 @@ const UserProfile = () => {
         <h2 className="text-xl font-semibold text-gray-700 mb-2">About</h2>
         {isEditing ? (
           <textarea
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 bg-transparent"
             value={editedUser.description || ""}
             onChange={(e) => handleInputChange("description", e.target.value)}
           />
@@ -250,7 +250,7 @@ const UserProfile = () => {
             <img
               src={selectedPhoto}
               alt="Selected"
-              className="w-[500px] h-auto rounded-lg mx-auto"
+              className="w-[400px] h-auto rounded-lg mx-auto"
             />
             <button
               className="absolute top-2 right-2 bg-red-500 px-4 py-2 rounded-full"

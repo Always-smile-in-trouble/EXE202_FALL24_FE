@@ -51,7 +51,7 @@ function MemberShip() {
       <div className="container">
         <div className="block-heading">
           <div
-            className="mr-[1500px]"
+            className="mr-[1180px]"
             onClick={() => {
               navigate("/matching");
             }}
