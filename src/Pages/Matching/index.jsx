@@ -391,7 +391,7 @@ function Matching() {
   console.log(selectedChat);
 
   return (
-    <div className="flex h-screen overflow-x-hidden">
+    <div className="flex h-screen w-full overflow-x-hidden overflow-y-auto">
       <div className="w-2/6 bg-gray-100 flex flex-col">
         <div className="flex items-center justify-between mb-3 bg-green-400 p-4">
           <div
