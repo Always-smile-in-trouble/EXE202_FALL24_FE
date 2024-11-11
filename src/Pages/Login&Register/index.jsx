@@ -9,6 +9,7 @@ import { register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
 import { login, userLoginSlice } from "../../redux/features/userLoginSlice";
 import badmintonRegis from "../../assets/logo/couple.webp";
+import badmintonLogin from "../../assets/logo/snapedit.png";
 const Index = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState("");
@@ -231,11 +232,7 @@ const Index = () => {
               Sign up
             </button>
           </div>
-          <img
-            src="https://www.creativefabrica.com/wp-content/uploads/2021/06/01/illustration-cartoon-badminton-player-Graphics-12777778-1-1-580x386.png"
-            className="auth-image mb-12"
-            alt="Log"
-          />
+          <img src={badmintonLogin} className="auth-image mb-12" alt="Log" />
         </div>
         <div className="auth-panel right-panel">
           <div className="auth-content">
