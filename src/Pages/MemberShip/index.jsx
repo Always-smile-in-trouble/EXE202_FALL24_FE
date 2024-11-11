@@ -56,7 +56,7 @@ function MemberShip() {
               navigate("/matching");
             }}
           >
-            <button className=" bg-blue-400 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-500 transition duration-200 ease-in-out transform hover:scale-105">
+            <button className=" bg-green-400 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-green-500 transition duration-200 ease-in-out transform hover:scale-105">
               Back
             </button>
           </div>
@@ -125,7 +125,7 @@ function MemberShip() {
               {membership.name === "FREE" ? (
                 <div className="owned-message">
                   <button
-                    className="btn btn-block btn-outline-primary"
+                    className="btn btn-block btn-owned"
                     type="button"
                     disabled
                   >
@@ -135,7 +135,7 @@ function MemberShip() {
               ) : membership.name === "DIAMOND" && user.diamondMember ? (
                 <div className="owned-message">
                   <button
-                    className="btn btn-block btn-outline-primary"
+                    className="btn btn-block btn-owned"
                     type="button"
                     disabled
                   >
@@ -144,7 +144,7 @@ function MemberShip() {
                 </div>
               ) : (
                 <button
-                  className="btn btn-block btn-outline-primary"
+                  className="btn btn-block btn-not-owned"
                   type="submit"
                   onClick={() => {
                     paymentPayOS(membership.id);

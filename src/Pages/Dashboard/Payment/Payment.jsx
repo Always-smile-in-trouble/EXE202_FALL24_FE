@@ -4,41 +4,46 @@ import api from "../../../config/axios";
 import formatCurrency from "../formatCurrency";
 
 const Payment = () => {
-  const [pay, setPay] = useState([]);
+  const [pay, setPay] = useState([]); // Dữ liệu payment
   const [pagination, setPagination] = useState({
-    current: 1, // Trang hiện tại mặc định là 1
-    pageSize: 5, // Số bản ghi mỗi trang
-    total: 0, // Tổng số bản ghi
+    current: 1, // Trang bắt đầu
+    pageSize: 10, // Số mục mỗi trang
+    total: 0, // Tổng số mục
   });
 
-  // Fetch payment with pagination
-  async function fetchPayment(pageNumber = 1, pageSize = 5) {
+  async function fetchPayment(pageNumber = 1, pageSize = 10) {
     try {
       const response = await api.get(
-        `/admin/v1/getAllPayment?page=${pageNumber - 1}&size=${pageSize}`
+        `/admin/v1/getAllPayment?currentPage=${pageNumber - 1}&size=${pageSize}`
       );
-      setPay(response.data.data.transactionResponseList); // Dữ liệu giao dịch
+
+      const totalPage = response.data.data.totalPage;
+
+      // Cập nhật pagination với totalPage từ API
       setPagination({
-        current: pageNumber,
+        ...pagination,
+        total: totalPage * pageSize,
         pageSize: pageSize,
-        total: response.data.data.totalCompleted, // Tổng số giao dịch từ API
+        current: pageNumber,
       });
+
+      setPay(response.data.data.transactionResponseList);
     } catch (error) {
       console.log(error);
     }
   }
 
-  // Fetch data on mount
+  // Sử dụng useEffect để lấy dữ liệu khi load trang lần đầu
   useEffect(() => {
-    fetchPayment(1, 5); // Lấy dữ liệu khi component mount
-  }, []);
+    fetchPayment(pagination.current, pagination.pageSize);
+  }, []); // Mảng phụ thuộc rỗng giúp gọi API chỉ khi component lần đầu render
 
-  // Handle page change
+  // Xử lý thay đổi trang
   const handleTableChange = (pagination) => {
-    fetchPayment(pagination.current, pagination.pageSize); // Khi chuyển trang, gọi lại fetchPayment
+    fetchPayment(pagination.current, pagination.pageSize);
   };
 
-  // Columns for the table
+  // Columns cho bảng
   const columns = [
     {
       title: "Name",
@@ -92,12 +97,13 @@ const Payment = () => {
     },
   ];
 
-  // Function to convert array to date string "YYYY-MM-DD"
   const convertArrayToDate = (arr) => {
     const [year, month, day] = arr;
     const dateObject = new Date(year, month - 1, day);
     return dateObject.toISOString().split("T")[0]; // Định dạng ngày "YYYY-MM-DD"
   };
+
+  const tableHeight = 55 * pagination.pageSize;
 
   return (
     <div className="payment">
@@ -106,17 +112,18 @@ const Payment = () => {
         dataSource={pay}
         columns={columns}
         scroll={{
-          y: 55 * 7,
+          y: tableHeight, // Cập nhật chiều cao bảng cố định
         }}
         className="w-11/12 ml-8"
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
           total: pagination.total,
-          onChange: (page, pageSize) => fetchPayment(page, pageSize),
           showSizeChanger: false,
+          hideOnSinglePage: true,
+          disabled: pagination.total <= pagination.pageSize,
         }}
-        onChange={handleTableChange}
+        onChange={handleTableChange} // Gọi lại hàm khi thay đổi trang
       />
     </div>
   );

@@ -6,27 +6,26 @@ import api from "../../../config/axios";
 
 const MainUser = () => {
   const [users, setUser] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  // const fetchUser = async () => {
-  //   const response = await api.get(`/admin/v1/getAllAccount`);
-  //   console.log(response.data.data.listAccount);
-  //   setUser(response.data.data.listAccount);
-  // };
-
-  async function fetchUser(pageNumber = 0, pageSize = 10) {
+  async function fetchUser(pageNumber = 1, pageSize = 10) {
     try {
       const response = await api.get(
-        `/admin/v1/getAllAccount?page=${pageNumber}&size=${pageSize}`
+        `/admin/v1/getAllAccount?currentPage=${pageNumber - 1}&size=${pageSize}`
       );
-      // setDatasource(response.data.data);
+
+      const totalPage = response.data.data.totalPage;
+
       setPagination({
         ...pagination,
-        total: response.data.data.total,
-        // pageSize: response.data.pageSize,
-        // current: pageNumber,
+        total: totalPage * pageSize,
+        pageSize: pageSize,
+        current: pageNumber,
       });
-      console.log(response.data.data.listAccount);
       setUser(response.data.data.listAccount);
     } catch (error) {
       console.log(error);
@@ -34,16 +33,12 @@ const MainUser = () => {
   }
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    fetchUser(pagination.current, pagination.pageSize);
+  }, []); // Mảng phụ thuộc rỗng giúp gọi API chỉ khi component lần đầu render
 
-  const handleDelete = async (id) => {
-    console.log(id);
-    const response = await api.delete(`/admin/v1`);
-
-    console.log(response);
-    const listAfterDelete = users.filter((user) => user.id !== id);
-    setUser(listAfterDelete);
+  // Xử lý thay đổi trang
+  const handleTableChange = (pagination) => {
+    fetchUser(pagination.current, pagination.pageSize);
   };
 
   const columns = [
@@ -76,22 +71,6 @@ const MainUser = () => {
         );
       },
     },
-    // {
-    //   title: "Actions",
-    //   dataIndex: "id",
-    //   key: "id",
-    //   render: (id) => (
-    //     <Popconfirm
-    //       title="Delete user"
-    //       description="Are you sure to delete this user?"
-    //       onConfirm={() => handleDelete(id)}
-    //       okText="Yes"
-    //       cancelText="No"
-    //     >
-    //       <Button danger>Delete</Button>
-    //     </Popconfirm>
-    //   ),
-    // },
   ];
 
   return (
@@ -101,8 +80,16 @@ const MainUser = () => {
         dataSource={users}
         columns={columns}
         className="w-11/12 ml-8 "
-        pagination={pagination}
-      ></Table>
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: false,
+          hideOnSinglePage: true,
+          disabled: pagination.total <= pagination.pageSize,
+        }}
+        onChange={handleTableChange}
+      />
     </div>
   );
 };

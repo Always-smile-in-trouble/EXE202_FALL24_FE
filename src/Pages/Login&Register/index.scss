@@ -128,13 +128,13 @@ form.auth-sign-in-form {
 }
 
 .auth-social-icon:hover {
-  color: #4481eb;
-  border-color: #4481eb;
+  color: #326e51da;
+  border-color: #225a3f;
 }
 
 .auth-btn {
   width: 150px;
-  background-color: #5995fd;
+  background-color: #326e51da;
   border: none;
   outline: none;
   height: 49px;
@@ -148,7 +148,7 @@ form.auth-sign-in-form {
 }
 
 .auth-btn:hover {
-  background-color: #4d84e2;
+  background-color: #225a3f;
 }
 
 .auth-panels-container {
@@ -169,7 +169,7 @@ form.auth-sign-in-form {
   top: -10%;
   right: 48%;
   transform: translateY(-50%);
-  background-image: linear-gradient(-45deg, #4481eb 0%, #04befe 100%);
+  background-image: linear-gradient(-45deg, #326e51 0%, #326e51d8 100%);
   transition: 1.8s ease-in-out;
   border-radius: 50%;
   z-index: 6;
@@ -311,7 +311,9 @@ form.auth-sign-in-form {
   }
 
   .auth-image {
-    width: 200px;
+    width: 80%;
+    max-width: 250px;
+    height: auto;
     transition: transform 0.9s ease-in-out;
     transition-delay: 0.6s;
   }

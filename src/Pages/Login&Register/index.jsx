@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
 import { login, userLoginSlice } from "../../redux/features/userLoginSlice";
+import badmintonRegis from "../../assets/logo/couple.webp";
 const Index = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [email, setEmail] = useState("");
@@ -250,11 +251,7 @@ const Index = () => {
               Sign in
             </button>
           </div>
-          <img
-            src="https://cdni.iconscout.com/illustration/premium/thumb/badminton-illustration-download-in-svg-png-gif-file-formats--player-racket-hobbies-pack-sports-games-illustrations-1753871.png"
-            className="auth-image"
-            alt="Register"
-          />
+          <img src={badmintonRegis} className="auth-image" alt="Register" />
         </div>
       </div>
     </div>

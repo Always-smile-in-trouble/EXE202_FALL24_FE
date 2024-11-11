@@ -12,6 +12,7 @@
   font-size: 22px;
   justify-content: center;
   align-items: center;
+  color: black;
 }
 
 .menuSidebar {
@@ -19,6 +20,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  color: black;
 }
 
 .menuItem {
@@ -33,10 +35,12 @@
   border-radius: 0 0.5rem 0.5rem 0;
   width: 180px;
   font-size: medium;
+  color: black;
 }
 
 .menuItem:hover {
   cursor: pointer;
+  color: black;
 }
 
 .active {

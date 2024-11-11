@@ -607,10 +607,12 @@ function Matching() {
                             />
                           </div>
 
-                          <span className="block text-center text-sm text-gray-600 mt-2">
+                          <span className="block text-center text-sm text-green-500 mt-2">
                             You two are connected!
                           </span>
-                          <span>Welcome! Let's start the conversation.</span>
+                          <span className="text-gray-600 font-extrabold">
+                            Welcome! Let's start the conversation.
+                          </span>
                         </div>
                       )}
 

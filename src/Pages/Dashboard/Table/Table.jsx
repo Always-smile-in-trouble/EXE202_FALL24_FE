@@ -6,13 +6,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
 import "./Table.css";
 import api from "../../../config/axios";
-// import { Button, Popconfirm, Space, Table, Tag } from "antd";
-
-function createData(name, trackingId, date, status) {
-  return { name, trackingId, date, status };
-}
 
 const makeStyle = (status) => {
   if (status === "COMPLETED") {
@@ -39,22 +35,21 @@ const makeStyle = (status) => {
 };
 
 export default function BasicTable() {
-  const [orders, setOrder] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const [orders, setOrders] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    totalPage: 1,
+  });
 
-  async function fetchData(pageNumber = 0, pageSize = 10) {
+  async function fetchData(pageNumber = 0, pageSize = 5) {
     try {
       const response = await api.get(
-        `/admin/v1/getAllPayment?page=${pageNumber}&size=${pageSize}`
+        `/admin/v1/getAllPayment?currentPage=${pageNumber}&size=${pageSize}`
       );
-      console.log(response.data.data);
-      setOrder(response.data.data.transactionResponseList);
+      setOrders(response.data.data.transactionResponseList);
       setPagination({
-        ...pagination,
-        // totalCompleted: response.data.data.totalCompleted,
-        // revenue: response.data.data.revenue,
-        // pageSize: response.data.pageSize,
-        current: pageNumber,
+        currentPage: pageNumber,
+        totalPage: response.data.data.totalPage,
       });
     } catch (error) {
       console.log(error);
@@ -65,26 +60,36 @@ export default function BasicTable() {
     fetchData();
   }, []);
 
-  const convertArrayToDate = (arr) => {
-    const [year, month, day] = arr; // Destructure year, month, and day
-    const dateObject = new Date(year, month - 1, day); // Month is zero-based
-    return dateObject.toISOString().split("T")[0]; // Format as "YYYY-MM-DD"
+  const handlePreviousPage = () => {
+    if (pagination.currentPage > 0) {
+      fetchData(pagination.currentPage - 1);
+    }
   };
+
+  const handleNextPage = () => {
+    if (pagination.currentPage < pagination.totalPage - 1) {
+      fetchData(pagination.currentPage + 1);
+    }
+  };
+
+  const convertArrayToDate = (arr) => {
+    const [year, month, day] = arr;
+    const dateObject = new Date(year, month - 1, day);
+    return dateObject.toISOString().split("T")[0];
+  };
+
+  // Calculate empty rows to always display 5 rows in the table
+  const rowsToDisplay = [...orders, ...Array(6 - orders.length).fill(null)];
 
   return (
     <div className="Table w-11/12 ml-8">
       <h3 className="mt-14 mb-4 font-bold">Recent Orders</h3>
-      {/* <Table dataSource={orders} pagination={pagination} /> */}
 
       <TableContainer
         component={Paper}
         style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
       >
-        <Table
-          sx={{ minWidth: 650 }}
-          aria-label="simple table"
-          pagination={pagination}
-        >
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell align="center">Mã giao dịch</TableCell>
@@ -94,28 +99,54 @@ export default function BasicTable() {
             </TableRow>
           </TableHead>
           <TableBody style={{ color: "white" }}>
-            {orders.map((row) => (
+            {rowsToDisplay.map((row, index) => (
               <TableRow
-                key={row.id}
+                key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="center">{row.id}</TableCell>
+                <TableCell align="center">{row ? row.id : ""}</TableCell>
                 <TableCell component="th" scope="row" align="center">
-                  {row.userName}
+                  {row ? row.userName : ""}
                 </TableCell>
                 <TableCell align="center">
-                  {convertArrayToDate(row.transactionDate)}
+                  {row ? convertArrayToDate(row.transactionDate) : ""}
                 </TableCell>
                 <TableCell align="center">
-                  <span className="status" style={makeStyle(row.status)}>
-                    {row.status}
-                  </span>
+                  {row ? (
+                    <span className="status" style={makeStyle(row.status)}>
+                      {row.status}
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <div className="pagination-controls mt-4">
+        <Button
+          variant="contained"
+          onClick={handlePreviousPage}
+          disabled={pagination.currentPage === 0}
+          style={{ backgroundColor: "#326e51da", color: "white" }}
+        >
+          Previous
+        </Button>
+        <span className="mx-4">
+          Page {pagination.currentPage + 1} of {pagination.totalPage}
+        </span>
+        <Button
+          variant="contained"
+          onClick={handleNextPage}
+          disabled={pagination.currentPage === pagination.totalPage - 1}
+          style={{ backgroundColor: "#326e51da", color: "white" }}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }
