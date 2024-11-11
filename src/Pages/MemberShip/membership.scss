@@ -118,10 +118,15 @@
 }
 
 .pricing-table .container {
-  max-width: 1200px;
+  width: 100vw;
+  height: 100vh; 
+  max-width: 100%;
+  max-height: 100%; 
   margin: 0 auto;
   padding: 0 20px;
+  box-sizing: border-box;
 }
+
 
 .pricing-table .btn-not-owned {
   background-color: black;
