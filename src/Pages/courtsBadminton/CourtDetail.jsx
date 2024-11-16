@@ -20,7 +20,7 @@ function CourtDetail({ courts }) {
   };
 
   return (
-    <div className="court-detail max-w-4xl mx-auto p-4">
+    <div className="court-detail max-w-4xl mx-auto p-4 text-black">
       <Link to="/courts" className="text-green-600 mb-4 inline-block">
         ← Quay lại
       </Link>
