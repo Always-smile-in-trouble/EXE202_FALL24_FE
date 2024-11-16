@@ -10,7 +10,7 @@ function CourtItems({ court }) {
         className="w-44 h-32 object-cover rounded-md mr-4" // Sử dụng w-48 h-48 cho ảnh lớn hơn
       />
       <div className="flex-1">
-        <h3 className="text-xl font-semibold">{court.name}</h3>
+        <h3 className="text-xl font-semibold text-black">{court.name}</h3>
         <p className="text-gray-600">{court.address}</p>
         <p className="text-yellow-500">
           ⭐ {court.rating} ({court.reviews})
