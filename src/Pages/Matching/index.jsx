@@ -446,6 +446,15 @@ function Matching() {
           <div className="flex space-x-6 items-center">
             <div className="flex flex-col justify-center items-center">
               <i
+                className="fas fa-solid fa-calendar-alt text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
+                onClick={() => {
+                  navigate(`/courts`);
+                }}
+              ></i>
+              <p className="text-xs text-gray-600">Booking</p>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <i
                 className="fas fa-solid fa-bag-shopping text-gray-600 cursor-pointer rounded-full p-2 hover:bg-gray-200"
                 onClick={() => {
                   navigate(`/membership`);

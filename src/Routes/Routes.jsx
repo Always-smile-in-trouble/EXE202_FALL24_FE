@@ -15,6 +15,13 @@ import MainPayment from "../Pages/Dashboard/MainPayment/MainPayment";
 import UserProfile from "../Pages/profile";
 import TransactionHistory from "../Pages/Transactions";
 import { ValidRouteAdmin } from "./ProtectedRoutes";
+import CourtList from "../Pages/courtsBadminton/CourtList";
+import courts from "../Pages/courtsBadminton/data";
+import CourtDetail from "../Pages/courtsBadminton/CourtDetail";
+import BookingForm from "../Pages/courtsBadminton/BookingForm";
+import ChooseCourts from "../Pages/courtsBadminton/ChooseCourts";
+import PaymentPage from "../Pages/courtsBadminton/Payment";
+import TransactionSuccess from "../Pages/courtsBadminton/PaymentSuccess";
 
 const router = createBrowserRouter([
   {
@@ -85,6 +92,30 @@ const router = createBrowserRouter([
   {
     path: "/payment",
     element: <MainPayment />,
+  },
+  {
+    path: "/courts",
+    element: <CourtList courts={courts} />,
+  },
+  {
+    path: "/court/:id",
+    element: <CourtDetail courts={courts} />,
+  },
+  {
+    path: "/choosecourt",
+    element: <ChooseCourts />,
+  },
+  {
+    path: "/bookinginfo",
+    element: <BookingForm />,
+  },
+  {
+    path: "/paymentbooking",
+    element: <PaymentPage />,
+  },
+  {
+    path: "/paymentsuccess",
+    element: <TransactionSuccess />,
   },
 ]);
 
