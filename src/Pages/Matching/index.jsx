@@ -451,7 +451,7 @@ function Matching() {
                   navigate(`/courts`);
                 }}
               ></i>
-              <p className="text-xs text-gray-600">Booking</p>
+              <p className="text-xs text-gray-600">Đặt Sân</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <i
@@ -460,7 +460,7 @@ function Matching() {
                   navigate(`/membership`);
                 }}
               ></i>
-              <p className="text-xs text-gray-600">Buy Now</p>
+              <p className="text-xs text-gray-600">Mua Gói</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <i
@@ -469,7 +469,7 @@ function Matching() {
                   navigate(`/profile`);
                 }}
               ></i>
-              <p className="text-xs text-gray-600">Profile</p>
+              <p className="text-xs text-gray-600">Hồ Sơ</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <i
@@ -478,7 +478,7 @@ function Matching() {
                   dispatch(clear()), navigate("/home"), dispatch(logout());
                 }}
               ></i>
-              <p className="text-xs text-gray-600">SignOut</p>
+              <p className="text-xs text-gray-600">Đăng Xuất</p>
             </div>
           </div>
         </div>

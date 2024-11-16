@@ -78,16 +78,16 @@ function ChooseCourts() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-semibold text-center mb-8">
+      <h1 className="text-3xl font-semibold text-center mb-8 text-green-500">
         Chọn sân cầu lông
       </h1>
       {courtName && courtAddress && (
-        <div className="mb-4">
+        <div className="mb-4 text-black">
           <p className="text-lg font-medium">Tên sân: {courtName}</p>
           <p className="text-lg">Địa chỉ: {courtAddress}</p>
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-black">
         {courtsData.map((court) => (
           <div
             key={court.id}
@@ -113,7 +113,7 @@ function ChooseCourts() {
                 id={`time-${court.id}`}
                 value={courtTimes[court.id] || ""}
                 onChange={(e) => handleTimeChange(court.id, e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md bg-transparent"
               >
                 <option value="">Chọn thời gian</option>
                 <option value="9:00 - 10:00 AM">9:00 - 10:00 AM</option>
@@ -126,7 +126,6 @@ function ChooseCourts() {
                 <option value="20:00 - 21:00 PM">20:00 - 21:00 PM</option>
               </select>
             </div>
-            {/* Checkbox for selection */}
             <div className="absolute top-2 right-2">
               <input
                 type="checkbox"

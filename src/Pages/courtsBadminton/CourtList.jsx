@@ -29,7 +29,7 @@ function CourtList({ courts }) {
           placeholder="Tìm kiếm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 mb-4 border border-gray-300 rounded"
+          className="w-full p-2 mb-4 border border-gray-300 rounded bg-transparent"
         />
         <div>
           {filteredCourts.length > 0 ? (

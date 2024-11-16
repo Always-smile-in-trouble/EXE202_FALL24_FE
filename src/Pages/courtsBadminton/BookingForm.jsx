@@ -66,7 +66,7 @@ function BookingForm({ courtsData }) {
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date)}
               dateFormat="dd/MM/yyyy"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 bg-transparent"
             />
           </div>
 
@@ -98,7 +98,7 @@ function BookingForm({ courtsData }) {
             </label>
             <input
               type="text"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 cursor-pointer"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 cursor-pointer bg-transparent"
               placeholder="Nguyễn Văn A"
             />
           </div>
@@ -109,7 +109,7 @@ function BookingForm({ courtsData }) {
             </label>
             <input
               type="text"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 bg-transparent"
               placeholder="0123 456 987"
             />
           </div>
@@ -120,7 +120,7 @@ function BookingForm({ courtsData }) {
             </label>
             <textarea
               rows="3"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 bg-transparent"
               placeholder="Nhập ghi chú"
             ></textarea>
           </div>
