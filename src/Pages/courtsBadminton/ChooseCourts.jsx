@@ -40,11 +40,20 @@ function ChooseCourts() {
   const navigate = useNavigate();
 
   const handleCheckboxChange = (courtId) => {
-    setSelectedCourts((prevSelected) =>
-      prevSelected.includes(courtId)
+    setSelectedCourts((prevSelected) => {
+      const newSelected = prevSelected.includes(courtId)
         ? prevSelected.filter((id) => id !== courtId)
-        : [...prevSelected, courtId]
-    );
+        : [...prevSelected, courtId];
+
+      if (!courtTimes[courtId] && newSelected.includes(courtId)) {
+        setCourtTimes((prevTimes) => ({
+          ...prevTimes,
+          [courtId]: "",
+        }));
+      }
+
+      return newSelected;
+    });
   };
 
   const handleTimeChange = (courtId, time) => {
@@ -55,7 +64,6 @@ function ChooseCourts() {
   };
 
   const handleCheckInfo = () => {
-    // Tạo một object `courtNames` mới với tên của các sân đã chọn
     const selectedCourtNames = selectedCourts.reduce((acc, courtId) => {
       const court = courtsData.find((court) => court.id === courtId);
       if (court) {
@@ -71,10 +79,16 @@ function ChooseCourts() {
         courtPrice: 60000,
         courtName,
         courtAddress,
-        courtNames: selectedCourtNames, // Chỉ gửi những tên sân đã chọn
+        courtNames: selectedCourtNames,
       },
     });
   };
+
+  // Kiểm tra xem người dùng đã chọn sân và giờ chưa
+  const isFormValid =
+    selectedCourts.every(
+      (courtId) => courtTimes[courtId] // Kiểm tra nếu đã chọn giờ cho sân đó
+    ) && selectedCourts.length > 0;
 
   return (
     <div className="container mx-auto p-8">
@@ -101,8 +115,7 @@ function ChooseCourts() {
             <h3 className="text-xl font-medium text-center mb-2">
               {court.name}
             </h3>
-            {/* Select time */}
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label
                 htmlFor={`time-${court.id}`}
                 className="block text-sm font-medium text-green-600 mb-2"
@@ -125,6 +138,13 @@ function ChooseCourts() {
                 <option value="19:00 - 20:00 PM">19:00 - 20:00 PM</option>
                 <option value="20:00 - 21:00 PM">20:00 - 21:00 PM</option>
               </select>
+
+              {/* Hiển thị thông báo nếu chưa chọn thời gian */}
+              {!courtTimes[court.id] && selectedCourts.includes(court.id) && (
+                <p className="absolute text-red-500 text-sm mt-2 top-full left-0 w-full">
+                  Vui lòng chọn thời gian
+                </p>
+              )}
             </div>
             <div className="absolute top-2 right-2">
               <input
@@ -140,7 +160,12 @@ function ChooseCourts() {
       <div className="fixed bottom-8 right-8">
         <button
           onClick={handleCheckInfo}
-          className="relative px-6 py-3 bg-green-600 text-white font-semibold rounded-full shadow-lg hover:bg-green-700 transition duration-300 ease-in-out"
+          disabled={!isFormValid} // Vô hiệu hóa nút nếu không chọn đủ sân và giờ
+          className={`relative px-6 py-3 ${
+            isFormValid
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gray-400 cursor-not-allowed"
+          } text-white font-semibold rounded-full shadow-lg transition duration-300 ease-in-out`}
         >
           Kiểm tra thông tin đặt sân
           {selectedCourts.length > 0 && (
